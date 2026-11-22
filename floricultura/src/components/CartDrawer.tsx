@@ -99,23 +99,25 @@ export function CartDrawer() {
 
   const set = <K extends keyof Customer>(k: K, v: Customer[K]) => setC((prev) => ({ ...prev, [k]: v }))
 
-  const send = () => {
+  const orderUrl = whatsappUrl(
+    STORE.whatsapp,
+    buildOrderMessage(
+      items.map((i) => ({ name: i.product.name, price: i.product.price, qty: i.qty })),
+      c,
+      STORE.delivery,
+    ),
+  )
+
+  // O envio é um link de verdade (abre em nova aba); só é barrado se faltar campo.
+  const send = (e?: { preventDefault: () => void }) => {
     setTried(true)
     if (missing.length) {
+      e?.preventDefault()
       const first = scroller.current?.querySelector<HTMLElement>(`[name="${missing[0]}"]`)
       first?.focus()
       return
     }
-    const text = buildOrderMessage(
-      items.map((i) => ({ name: i.product.name, price: i.product.price, qty: i.qty })),
-      c,
-      STORE.delivery,
-    )
-    const url = whatsappUrl(STORE.whatsapp, text)
-    setSentUrl(url)
-    const win = window.open(url, '_blank')
-    if (win) win.opener = null
-    else window.location.href = url
+    setSentUrl(orderUrl)
     setStep('enviado')
   }
 
@@ -222,7 +224,7 @@ export function CartDrawer() {
                   ) : null}
 
                   {step === 'dados' ? (
-                    <form className="form" onSubmit={(e) => { e.preventDefault(); send() }} noValidate>
+                    <form className="form" onSubmit={(e) => e.preventDefault()} noValidate>
                       <div className="seg" role="radiogroup" aria-label="Como receber">
                         {(['entrega', 'retirada'] as const).map((m) => (
                           <button
@@ -381,10 +383,10 @@ export function CartDrawer() {
                     <button className="btn btn-ghost" onClick={() => setStep('sacola')}>
                       Voltar
                     </button>
-                    <button className="btn btn-whats btn-lg" onClick={send}>
+                    <a className="btn btn-whats btn-lg" href={orderUrl} target="_blank" rel="noreferrer" onClick={send}>
                       <WhatsIcon />
                       Enviar pedido no WhatsApp
-                    </button>
+                    </a>
                   </div>
                 )}
               </div>
