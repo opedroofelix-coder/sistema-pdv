@@ -1,106 +1,70 @@
 import { useRef } from 'react'
 import { OCCASIONS, PRODUCTS, type Occasion } from '../data/products'
-import { gsap, useGSAP } from '../lib/gsap'
-import { FlowerArt } from './FlowerArt'
+import { gsap, useGSAP, prefersReducedMotion } from '../lib/gsap'
+import { photo } from '../lib/photos'
+import { IconArrow } from './Icons'
+import { SectionHead } from './SectionHead'
 
-/** No desktop a seção fixa na tela e os cards correm na horizontal. */
-// um produto diferente ilustrando cada ocasião
-const used = new Set<string>()
-const samples = OCCASIONS.map((o) => {
-  const p = PRODUCTS.find((x) => x.occasions.includes(o.id) && !used.has(x.id)) ?? PRODUCTS.find((x) => x.occasions.includes(o.id))
-  if (p) used.add(p.id)
-  return p
-})
-
-export function Occasions({ onPick }: { onPick: (o: Occasion) => void }) {
+export function Occasions({ onPick }: { onPick: (o: Occasion | null) => void }) {
   const root = useRef<HTMLElement>(null)
-  const track = useRef<HTMLDivElement>(null)
 
   useGSAP(
     () => {
-      const mm = gsap.matchMedia()
-      mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
-        const el = track.current
-        if (!el) return
-        const distance = () => el.scrollWidth - window.innerWidth + 48
-        const tween = gsap.to(el, {
-          x: () => -distance(),
-          ease: 'none',
-          scrollTrigger: {
-            trigger: root.current,
-            start: 'top top',
-            end: () => `+=${distance()}`,
-            pin: true,
-            scrub: 1,
-            invalidateOnRefresh: true,
-          },
-        })
-        // arte de cada card desliza no sentido contrário (profundidade)
-        gsap.utils.toArray<HTMLElement>('.occ-art').forEach((art) => {
-          gsap.fromTo(
-            art,
-            { xPercent: 18, rotate: 6 },
-            {
-              xPercent: -18,
-              rotate: -6,
-              ease: 'none',
-              scrollTrigger: { trigger: art, containerAnimation: tween, start: 'left right', end: 'right left', scrub: true },
-            },
-          )
-        })
-        gsap.to('.occ-progress-bar', {
-          scaleX: 1,
-          ease: 'none',
-          scrollTrigger: { trigger: root.current, start: 'top top', end: () => `+=${distance()}`, scrub: true },
-        })
-      })
-      mm.add('(max-width: 899px), (prefers-reduced-motion: reduce)', () => {
-        gsap.set('.occ-progress-bar', { scaleX: 1 })
-      })
-      return () => mm.revert()
+      if (prefersReducedMotion()) return
+      gsap.fromTo(
+        '.occ-card',
+        { clipPath: 'inset(100% 0% 0% 0% round 22px)', y: 40 },
+        {
+          clipPath: 'inset(0% 0% 0% 0% round 22px)',
+          y: 0,
+          duration: 1.2,
+          ease: 'power4.inOut',
+          stagger: 0.07,
+          scrollTrigger: { trigger: '.occ-row', start: 'top 85%', once: true },
+        },
+      )
+      gsap.from('.occ-card img', { scale: 1.35, duration: 1.8, ease: 'power3.out', stagger: 0.07, scrollTrigger: { trigger: '.occ-row', start: 'top 85%', once: true } })
     },
     { scope: root },
   )
 
   return (
-    <section ref={root} className="occasions" id="ocasioes" data-bg="#c9bdf2" data-fg="#141414" aria-labelledby="occ-title">
-      <div className="occ-head">
-        <p className="eyebrow">(03) — Para cada momento</p>
-        <h2 id="occ-title" className="display">
-          Pela <span className="display-serif">ocasião</span>
-        </h2>
-        <div className="occ-progress" aria-hidden>
-          <span className="occ-progress-bar" />
-        </div>
-      </div>
-      <div className="occ-viewport">
-        <div ref={track} className="occ-track">
-          {OCCASIONS.map((o, i) => {
-            const sample = samples[i]
-            const n = PRODUCTS.filter((p) => p.occasions.includes(o.id)).length
-            return (
-              <button
-                key={o.id}
-                className="occ-card"
-                style={{ background: o.bg, color: o.ink }}
-                onClick={() => onPick(o.id)}
-                data-cursor="Filtrar"
-              >
-                <span className="occ-num">{String(i + 1).padStart(2, '0')}</span>
+    <section ref={root} className="section occasions" id="ocasioes" aria-labelledby="occ-title">
+      <SectionHead
+        id="occ-title"
+        eyebrow="Catálogo de ocasiões"
+        title={
+          <>
+            Escolha a ideia
+            <br />
+            para o seu momento
+          </>
+        }
+        action={
+          <button className="link-arrow" onClick={() => onPick(null)}>
+            Ver todos <IconArrow />
+          </button>
+        }
+      />
+      <div className="occ-row">
+        {OCCASIONS.map((o) => {
+          const n = PRODUCTS.filter((p) => p.occasions.includes(o.id)).length
+          return (
+            <button key={o.id} className="occ-card" onClick={() => onPick(o.id)} data-cursor="Ver">
+              <img src={photo(o.photo)} alt="" loading="lazy" />
+              <span className="occ-shade" />
+              <span className="occ-info">
                 <span className="occ-name">{o.label}</span>
-                <span className="occ-line">{o.line}</span>
-                <span className="occ-count">
-                  {n} {n === 1 ? 'opção' : 'opções'} <span aria-hidden>→</span>
+                <span className="occ-n">
+                  {n} {n === 1 ? 'opção' : 'opções'}
                 </span>
-                {sample ? (
-                  <span className="occ-art" aria-hidden>
-                    <FlowerArt spec={sample.art} seed={`${sample.id}-occ`} />
-                  </span>
-                ) : null}
-              </button>
-            )
-          })}
-        </div>
+              </span>
+              <span className="occ-go" aria-hidden>
+                <IconArrow />
+              </span>
+            </button>
+          )
+        })}
       </div>
     </section>
   )

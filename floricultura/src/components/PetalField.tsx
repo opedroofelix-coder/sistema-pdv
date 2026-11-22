@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-const COLORS = ['#ef5b4c', '#f8a5b1', '#ffd166', '#fbfaf6', '#c9bdf2', '#ff8a7a']
+const COLORS = ['#f2c4c8', '#eab0b8', '#f7d9d6', '#fbe9e4', '#e7a6ae']
 
 interface Petal {
   x: number
@@ -41,11 +41,11 @@ export function PetalField({ density = 1 }: { density?: number }) {
     }
     resize()
 
-    const count = Math.round((w < 700 ? 16 : 34) * density)
+    const count = Math.round((w < 700 ? 10 : 22) * density)
     const make = (top = false): Petal => ({
       x: Math.random() * w,
       y: top ? -20 - Math.random() * 80 : Math.random() * h,
-      r: 7 + Math.random() * 11,
+      r: 6 + Math.random() * 10,
       rot: Math.random() * Math.PI * 2,
       vr: (Math.random() - 0.5) * 0.03,
       vy: 0.35 + Math.random() * 0.6,

@@ -1,93 +1,94 @@
 import { useRef } from 'react'
 import { STORE } from '../config'
-import { gsap, useGSAP } from '../lib/gsap'
+import { gsap, useGSAP, prefersReducedMotion } from '../lib/gsap'
 import { whatsappUrl } from '../lib/order'
+import { photo } from '../lib/photos'
+import { IconArrow, IconWhats } from './Icons'
 import { Magnetic } from './Magnetic'
+import { PetalField } from './PetalField'
+import { useScrollTo } from './SmoothScroll'
 
-const WORD = 'ATELIÊ'
-
-/** Rodapé fixo por baixo, revelado quando a página termina. */
 export function Footer() {
-  const root = useRef<HTMLDivElement>(null)
+  const root = useRef<HTMLElement>(null)
+  const scrollTo = useScrollTo()
 
-  // peso de cada letra segue a distância do ponteiro (fonte variável)
   useGSAP(
-    (_, contextSafe) => {
-      if (!contextSafe || !window.matchMedia('(pointer: fine) and (prefers-reduced-motion: no-preference)').matches) return
-      const chars = gsap.utils.toArray<HTMLElement>('.ft-char')
-      const setters = chars.map((c) => gsap.quickTo(c, '--w', { duration: 0.6, ease: 'power3.out' }))
-      const move = contextSafe((e: PointerEvent) => {
-        chars.forEach((c, i) => {
-          const r = c.getBoundingClientRect()
-          const d = Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2))
-          setters[i](gsap.utils.mapRange(0, 600, 200, 800, Math.min(d, 600)))
-        })
-      })
-      window.addEventListener('pointermove', move)
-      return () => window.removeEventListener('pointermove', move)
+    () => {
+      if (prefersReducedMotion()) return
+      gsap.fromTo('.banner-img', { scale: 1.25, yPercent: -6 }, { scale: 1, yPercent: 6, ease: 'none', scrollTrigger: { trigger: '.banner', start: 'top bottom', end: 'bottom top', scrub: true } })
+      gsap.from('.banner-line-i', { yPercent: 110, duration: 1.2, ease: 'power4.out', stagger: 0.1, scrollTrigger: { trigger: '.banner', start: 'top 70%', once: true } })
     },
     { scope: root },
   )
 
-  const hello = whatsappUrl(STORE.whatsapp, `Olá! Vim pelo site da ${STORE.name} e tenho uma dúvida.`)
+  const hello = whatsappUrl(STORE.whatsapp, `Olá! Vim pelo site da ${STORE.name}.`)
 
   return (
-    <div className="footer-wrap" id="contato" ref={root}>
-      <footer className="footer">
-        <div className="footer-top">
-          <div className="footer-call">
-            <p className="eyebrow">(05) — Fale com a gente</p>
-            <h2 className="footer-title">
-              Não achou o que queria? <span className="display-serif">A gente monta.</span>
-            </h2>
-            <Magnetic>
-              <a className="pill pill-solid pill-lg" href={hello} target="_blank" rel="noreferrer" data-cursor="Conversar">
-                <span className="pill-roll" data-text="Chamar no WhatsApp">Chamar no WhatsApp</span>
-              </a>
-            </Magnetic>
-          </div>
-          <dl className="footer-info">
-            <div>
-              <dt>Loja</dt>
-              <dd>
-                {STORE.address}
-                <br />
-                {STORE.city}
-              </dd>
-            </div>
-            <div>
-              <dt>Horário</dt>
-              <dd>
-                {STORE.hours.map((h) => (
-                  <span key={h.days} className="footer-hour">
-                    <span>{h.days}</span>
-                    <span>{h.time}</span>
-                  </span>
-                ))}
-              </dd>
-            </div>
-            <div>
-              <dt>Contato</dt>
-              <dd>
-                <a href={hello} target="_blank" rel="noreferrer">WhatsApp {STORE.whatsappDisplay}</a>
-                <br />
-                <a href={`https://instagram.com/${STORE.instagram}`} target="_blank" rel="noreferrer">@{STORE.instagram}</a>
-              </dd>
-            </div>
-          </dl>
+    <footer ref={root} className="footer" id="contato">
+      <div className="banner">
+        <PetalField density={0.6} />
+        <div className="banner-media" aria-hidden>
+          <img className="banner-img" src={photo('banner')} alt="" loading="lazy" />
         </div>
-        <p className="footer-word" aria-hidden>
-          {WORD.split('').map((c, i) => (
-            <span key={i} className="ft-char">
-              {c}
-            </span>
-          ))}
-        </p>
-        <p className="footer-legal">
-          <span>© {new Date().getFullYear()} {STORE.name}</span>
-          <span>Preços e disponibilidade confirmados no atendimento.</span>
-        </p>
-      </footer>
-    </div>
+        <div className="banner-copy">
+          <h2 className="banner-title">
+            {['Presenteie sentimentos', 'que ficam no coração', 'para sempre'].map((l) => (
+              <span key={l} className="banner-line">
+                <span className="banner-line-i">{l}</span>
+              </span>
+            ))}
+          </h2>
+          <Magnetic>
+            <button className="btn-gold" onClick={() => scrollTo('catalogo')} data-cursor="Ver">
+              Escolher buquê <IconArrow />
+            </button>
+          </Magnetic>
+        </div>
+      </div>
+
+      <div className="foot">
+        <div className="foot-brand">
+          <p className="brand-name">{STORE.shortName}</p>
+          <p className="brand-sub">das flores</p>
+          <p className="foot-text">{STORE.tagline}. Flores frescas, montadas à mão, com entrega na cidade.</p>
+        </div>
+        <dl className="foot-cols">
+          <div>
+            <dt>Loja</dt>
+            <dd>
+              {STORE.address}
+              <br />
+              {STORE.city}
+            </dd>
+          </div>
+          <div>
+            <dt>Horário</dt>
+            <dd>
+              {STORE.hours.map((h) => (
+                <span key={h.days} className="foot-hour">
+                  <span>{h.days}</span>
+                  <span>{h.time}</span>
+                </span>
+              ))}
+            </dd>
+          </div>
+          <div>
+            <dt>Contato</dt>
+            <dd>
+              <a href={hello} target="_blank" rel="noreferrer" className="foot-whats">
+                <IconWhats /> {STORE.whatsappDisplay}
+              </a>
+              <a href={`https://instagram.com/${STORE.instagram}`} target="_blank" rel="noreferrer">
+                @{STORE.instagram}
+              </a>
+            </dd>
+          </div>
+        </dl>
+      </div>
+      <p className="foot-legal">
+        <span>© {new Date().getFullYear()} {STORE.name}. Preços e disponibilidade confirmados no atendimento.</span>
+        <span>Fotos ilustrativas de banco de imagens livre (CC0).</span>
+      </p>
+    </footer>
   )
 }

@@ -16,7 +16,7 @@ export function MobileBar() {
           exit={{ y: 120 }}
           transition={{ type: 'spring', stiffness: 260, damping: 28 }}
         >
-          <span className="mobile-bar-count">{count}</span>
+          <span className="mobile-bar-count" data-cart-target>{count}</span>
           <span>Ver sacola</span>
           <strong>{brl(subtotal)}</strong>
         </motion.button>

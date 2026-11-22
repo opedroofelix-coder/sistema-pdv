@@ -4,7 +4,8 @@ import { STORE } from '../config'
 import { useCart } from '../lib/cart'
 import { brl, maskPhone } from '../lib/format'
 import { buildOrderMessage, deliveryFeeOf, missingFields, whatsappUrl, type Customer } from '../lib/order'
-import { FlowerArt } from './FlowerArt'
+import { photo } from '../lib/photos'
+import { IconClose, IconWhats } from './Icons'
 
 type Step = 'sacola' | 'dados' | 'enviado'
 
@@ -102,7 +103,7 @@ export function CartDrawer() {
   const orderUrl = whatsappUrl(
     STORE.whatsapp,
     buildOrderMessage(
-      items.map((i) => ({ name: i.product.name, price: i.product.price, qty: i.qty })),
+      items.map((i) => ({ name: i.name, price: i.price, qty: i.qty, details: i.details })),
       c,
       STORE.delivery,
     ),
@@ -168,7 +169,7 @@ export function CartDrawer() {
                 </h2>
               </div>
               <button className="icon-btn" onClick={close} aria-label="Fechar sacola">
-                <svg viewBox="0 0 24 24" aria-hidden><path d="M6 6l12 12M18 6L6 18" /></svg>
+                <IconClose />
               </button>
             </div>
 
@@ -196,26 +197,27 @@ export function CartDrawer() {
                     ) : (
                       <ul className="lines">
                         <AnimatePresence initial={false}>
-                          {items.map(({ product, qty }) => (
+                          {items.map((it) => (
                             <motion.li
-                              key={product.id}
+                              key={it.key}
                               className="line"
                               layout
                               exit={{ opacity: 0, x: 40, transition: { duration: 0.25 } }}
                             >
-                              <span className="line-art" style={{ background: product.art.bg }}>
-                                {product.image ? <img src={product.image} alt="" /> : <FlowerArt spec={product.art} seed={product.id} />}
+                              <span className="line-art">
+                                <img src={photo(it.product ? it.product.photo : 'builder')} alt="" />
                               </span>
                               <span className="line-info">
-                                <span className="line-name">{product.name}</span>
-                                <span className="line-unit">{brl(product.price)} cada</span>
+                                <span className="line-name">{it.name}</span>
+                                {it.details ? <span className="line-details">{it.details.join(' · ')}</span> : null}
+                                <span className="line-unit">{brl(it.price)} cada</span>
                                 <span className="stepper stepper-sm">
-                                  <button onClick={() => setQty(product.id, qty - 1)} aria-label={`Diminuir ${product.name}`}>−</button>
-                                  <span>{qty}</span>
-                                  <button onClick={() => setQty(product.id, qty + 1)} aria-label={`Aumentar ${product.name}`}>+</button>
+                                  <button onClick={() => setQty(it.key, it.qty - 1)} aria-label={`Diminuir ${it.name}`}>−</button>
+                                  <span>{it.qty}</span>
+                                  <button onClick={() => setQty(it.key, it.qty + 1)} aria-label={`Aumentar ${it.name}`}>+</button>
                                 </span>
                               </span>
-                              <span className="line-total">{brl(product.price * qty)}</span>
+                              <span className="line-total">{brl(it.price * it.qty)}</span>
                             </motion.li>
                           ))}
                         </AnimatePresence>
@@ -338,7 +340,7 @@ export function CartDrawer() {
                   {step === 'enviado' ? (
                     <div className="sent">
                       <div className="sent-art">
-                        <FlowerArt spec={items[0]?.product.art ?? { flowers: [{ kind: 'rose', colors: ['#c8553d'], count: 1 }], holder: 'wrap', holderColor: '#d9b98c', bg: '' }} seed="obrigado" />
+                        <img src={photo('occ-amor')} alt="" />
                       </div>
                       <p className="sent-lead">Abrimos o WhatsApp com o seu pedido pronto.</p>
                       <p>
@@ -384,7 +386,7 @@ export function CartDrawer() {
                       Voltar
                     </button>
                     <a className="btn btn-whats btn-lg" href={orderUrl} target="_blank" rel="noreferrer" onClick={send}>
-                      <WhatsIcon />
+                      <IconWhats className="whats-icon" />
                       Enviar pedido no WhatsApp
                     </a>
                   </div>
@@ -414,16 +416,5 @@ function Field({ label, children, error, optional }: { label: string; children: 
       </span>
       {children}
     </label>
-  )
-}
-
-export function WhatsIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden className="whats-icon">
-      <path
-        fill="currentColor"
-        d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1112 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 01-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2 5.2 5.2 0 001.1 2.7 11.8 11.8 0 004.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"
-      />
-    </svg>
   )
 }

@@ -4,6 +4,8 @@ export interface OrderLine {
   name: string
   price: number
   qty: number
+  /** Composição do buquê montado (uma linha por item). */
+  details?: string[]
 }
 
 export interface Customer {
@@ -59,7 +61,10 @@ export function buildOrderMessage(lines: OrderLine[], c: Customer, rules: Delive
   const out: string[] = []
   out.push('Olá! Quero fazer este pedido pelo site:', '')
   out.push('*PEDIDO*')
-  for (const l of lines) out.push(`• ${l.qty}x ${l.name} — ${brl(l.price * l.qty)}`)
+  for (const l of lines) {
+    out.push(`• ${l.qty}x ${l.name} — ${brl(l.price * l.qty)}`)
+    for (const d of l.details ?? []) out.push(`   - ${d}`)
+  }
   out.push('')
   out.push(`Subtotal: ${brl(subtotal)}`)
   if (c.mode === 'entrega') out.push(`Entrega: ${fee === 0 ? 'grátis' : brl(fee)}`)

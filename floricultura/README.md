@@ -6,8 +6,11 @@ ir para a Vercel como projeto separado (Root Directory = `floricultura`).
 
 ## O que tem
 
-- **Catálogo** com filtro por categoria e por ocasião, ilustrações vetoriais
-  geradas por produto (ou foto real, se preencher `image`).
+- **Catálogo** com fotos, filtro por categoria e por ocasião, favoritos e
+  animação do produto "voando" até a sacola.
+- **Monte seu buquê**: o cliente escolhe flores (por haste), embalagem, fita,
+  extras e mensagem do cartão; o preço é calculado na hora e o buquê entra na
+  sacola com a composição, que vai detalhada na mensagem do WhatsApp.
 - **Sacola** que fica salva no navegador, com quantidades e total.
 - **Checkout em 2 passos**: entrega ou retirada, endereço, data e período,
   mensagem do cartão, forma de pagamento. Taxa de entrega com frete grátis a
@@ -29,8 +32,12 @@ ir para a Vercel como projeto separado (Root Directory = `floricultura`).
 | Texto da mensagem do WhatsApp | `src/lib/order.ts` |
 | Cores e fontes | `src/styles.css` (bloco `:root`) |
 
-Para usar foto real num produto, coloque o arquivo em `public/fotos/` e
-preencha `image: '/fotos/nome.jpg'` no produto.
+As fotos ficam em `src/assets/fotos/` (JPG, ~1000px). São fotos ilustrativas
+de bancos de imagem livres (CC0); a origem de cada uma está em
+`src/assets/fotos/CREDITOS.json`. Para usar as fotos da loja, substitua o
+arquivo mantendo o nome (ex.: `p-peonias.jpg`) ou mude a chave `photo` do
+produto em `src/data/products.ts`. Flores e preços do "Monte seu buquê" ficam
+no mesmo arquivo, em `BUILDER`.
 
 ## Rodar
 

@@ -62,3 +62,14 @@ describe('pedido', () => {
     expect(maskPhone('1133334444')).toBe('(11) 3333-4444')
   })
 })
+
+describe('buquê montado', () => {
+  it('lista a composição abaixo do item', () => {
+    const msg = buildOrderMessage(
+      [{ name: 'Buquê personalizado', price: 300, qty: 1, details: ['7 Peônia rosa', 'Papel: Kraft'] }],
+      { ...base, mode: 'retirada' },
+      rules,
+    )
+    expect(msg).toContain('• 1x Buquê personalizado — R$ 300,00\n   - 7 Peônia rosa\n   - Papel: Kraft')
+  })
+})
