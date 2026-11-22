@@ -26,6 +26,15 @@ interface Props {
   onQuantityChange: (productId: string, delta: number) => void
   onClose: () => void
   onSent: () => void
+  /** Demonstração: em vez de abrir o WhatsApp, mostra a mensagem que a loja receberia. */
+  demo?: boolean
+}
+
+interface Sent {
+  url: string
+  message: string
+  /** A aba do WhatsApp abriu (false = bloqueada; mostramos o botão). */
+  opened: boolean
 }
 
 const CARD_LIMIT = 200
@@ -42,11 +51,12 @@ export function OrderSheet({
   onQuantityChange,
   onClose,
   onSent,
+  demo,
 }: Props) {
   const panelRef = useRef<HTMLDivElement>(null)
   const titleId = useId()
   const [errors, setErrors] = useState<OrderErrors>({})
-  const [sentUrl, setSentUrl] = useState('')
+  const [sent, setSent] = useState<Sent | null>(null)
   const total = cartTotal(lines)
   const today = todayIso()
 
@@ -69,7 +79,7 @@ export function OrderSheet({
 
   useEffect(() => {
     if (!open) {
-      setSentUrl('')
+      setSent(null)
       setErrors({})
     }
   }, [open])
@@ -89,15 +99,21 @@ export function OrderSheet({
       document.getElementById(`loja-${first}`)?.focus()
       return
     }
-    const url = whatsappLink(storeWhatsapp, buildOrderMessage(lines, order, storeName))
+    const message = buildOrderMessage(lines, order, storeName)
+    if (demo) {
+      setSent({ url: '', message, opened: false })
+      onSent()
+      return
+    }
+    const url = whatsappLink(storeWhatsapp, message)
     if (!url) return
-    setSentUrl(url)
-    onSent()
     // Sem 'noopener' nas features: com ele o window.open sempre devolve null
-    // e não dá pra saber se o navegador bloqueou a aba.
+    // e não dá pra saber se o navegador bloqueou a aba. Se bloqueou, a tela
+    // seguinte mostra o botão para abrir na mão.
     const win = window.open(url, '_blank')
     if (win) win.opener = null
-    else window.location.href = url
+    setSent({ url, message, opened: !!win })
+    onSent()
   }
 
   return (
@@ -116,13 +132,13 @@ export function OrderSheet({
             type="button"
             onClick={onClose}
             className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-[var(--l-ground)]"
-            aria-label={sentUrl ? 'Fechar' : 'Voltar ao catálogo'}
+            aria-label={sent ? 'Fechar' : 'Voltar ao catálogo'}
           >
-            {sentUrl ? <X size={22} aria-hidden /> : <ArrowLeft size={22} aria-hidden />}
+            {sent ? <X size={22} aria-hidden /> : <ArrowLeft size={22} aria-hidden />}
           </button>
           <div className="min-w-0">
             <h2 id={titleId} className="loja-hand text-[24px] leading-none">
-              {sentUrl ? 'Pedido enviado' : 'Seu pedido'}
+              {sent ? 'Pedido pronto' : 'Seu pedido'}
             </h2>
             <p className="loja-stamp mt-1 text-[12px] text-[var(--l-ink-2)]">
               {storeName} · talão de {new Date().toLocaleDateString('pt-BR')}
@@ -130,8 +146,8 @@ export function OrderSheet({
           </div>
         </header>
 
-        {sentUrl ? (
-          <SentState url={sentUrl} onClose={onClose} />
+        {sent ? (
+          <SentState sent={sent} demo={demo} onClose={onClose} />
         ) : lines.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center px-8 text-center">
             <p className="loja-hand text-[26px]">A sacola está vazia</p>
@@ -320,7 +336,7 @@ export function OrderSheet({
                 <span className="loja-stamp text-[13px] text-[var(--l-ink-2)]">Total dos itens</span>
                 <span className="loja-hand text-[28px] leading-none">{formatCurrency(total)}</span>
               </div>
-              {storeWhatsapp ? (
+              {storeWhatsapp || demo ? (
                 <button
                   type="submit"
                   form="loja-order-form"
@@ -342,32 +358,79 @@ export function OrderSheet({
   )
 }
 
-function SentState({ url, onClose }: { url: string; onClose: () => void }) {
+function SentState({ sent, demo, onClose }: { sent: Sent; demo?: boolean; onClose: () => void }) {
+  const back = (
+    <button
+      type="button"
+      onClick={onClose}
+      className="mt-6 h-12 rounded-full border-[1.5px] border-[var(--l-ink)] px-6 font-semibold hover:bg-[var(--l-ground)]"
+    >
+      Voltar ao catálogo
+    </button>
+  )
+
+  if (demo) {
+    return (
+      <div className="flex-1 overflow-y-auto px-5 py-6">
+        <p className="loja-hand text-[26px] leading-tight">Mensagem que a loja recebe</p>
+        <p className="mt-1 text-[14px] text-[var(--l-ink-2)]">
+          Na loja de verdade, este texto abre pronto no WhatsApp da floricultura.
+        </p>
+        <pre className="mt-4 whitespace-pre-wrap break-words rounded-[14px] rounded-tr-[4px] bg-[#dcf3d6] p-4 font-[inherit] text-[14px] leading-relaxed text-[var(--l-ink)] shadow-[0_6px_18px_-10px_rgba(30,26,22,0.5)]">
+          {sent.message.split('\n').map((line, i) => (
+            <span key={i}>
+              {formatWhatsapp(line)}
+              {'\n'}
+            </span>
+          ))}
+        </pre>
+        <div className="flex justify-center">{back}</div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-8 text-center">
       <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--l-leaf)] text-white">
         <Check size={32} strokeWidth={2.6} aria-hidden />
       </span>
-      <p className="loja-hand mt-5 text-[28px] leading-tight">Seu pedido foi para o WhatsApp</p>
-      <p className="mt-2 max-w-[34ch] text-[var(--l-ink-2)]">
-        Toque em enviar na conversa. A loja responde por lá para confirmar flores, entrega e pagamento.
-      </p>
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener"
-        className="mt-6 font-semibold text-[var(--l-action)] underline"
-      >
-        O WhatsApp não abriu? Toque aqui
-      </a>
-      <button
-        type="button"
-        onClick={onClose}
-        className="mt-6 h-12 rounded-full border-[1.5px] border-[var(--l-ink)] px-6 font-semibold hover:bg-[var(--l-ground)]"
-      >
-        Voltar ao catálogo
-      </button>
+      {sent.opened ? (
+        <>
+          <p className="loja-hand mt-5 text-[28px] leading-tight">Falta só enviar no WhatsApp</p>
+          <p className="mt-2 max-w-[34ch] text-[var(--l-ink-2)]">
+            O pedido abriu na conversa com a loja. Toque em enviar lá; a loja responde para confirmar
+            flores, entrega e pagamento.
+          </p>
+          <a href={sent.url} target="_blank" rel="noopener" className="mt-6 font-semibold text-[var(--l-action)] underline">
+            O WhatsApp não abriu? Toque aqui
+          </a>
+        </>
+      ) : (
+        <>
+          <p className="loja-hand mt-5 text-[28px] leading-tight">Seu pedido está pronto</p>
+          <p className="mt-2 max-w-[34ch] text-[var(--l-ink-2)]">
+            Abra a conversa com a loja e toque em enviar. O texto já vai preenchido.
+          </p>
+          <a
+            href={sent.url}
+            target="_blank"
+            rel="noopener"
+            className="mt-6 flex h-14 items-center gap-2 rounded-full bg-[var(--l-action)] px-7 text-[17px] font-semibold text-[var(--l-on-action)] hover:bg-[var(--l-action-hover)]"
+          >
+            <MessageCircle size={20} aria-hidden /> Abrir no WhatsApp
+          </a>
+        </>
+      )}
+      {back}
     </div>
+  )
+}
+
+/** *negrito* do WhatsApp, só pra mostrar a prévia. */
+function formatWhatsapp(line: string): ReactNode {
+  const parts = line.split(/(\*[^*]+\*)/g)
+  return parts.map((part, i) =>
+    part.startsWith('*') && part.endsWith('*') && part.length > 2 ? <strong key={i}>{part.slice(1, -1)}</strong> : part,
   )
 }
 

@@ -46,7 +46,12 @@ function writeJson(key: string, value: unknown) {
 type Status = 'loading' | 'ready' | 'error'
 type Filter = CategoryId | 'todos'
 
-export function Loja() {
+interface LojaProps {
+  /** Demonstração (artefato de apresentação): o pedido mostra a mensagem em vez de abrir o WhatsApp. */
+  demo?: boolean
+}
+
+export function Loja({ demo = false }: LojaProps = {}) {
   const [products, setProducts] = useState<CatalogProduct[]>([])
   const [status, setStatus] = useState<Status>('loading')
   const [cart, setCart] = useState<Cart>(() => readJson<Cart>(CART_KEY, {}))
@@ -364,6 +369,7 @@ export function Loja() {
         onQuantityChange={changeById}
         onClose={closeSheet}
         onSent={onSent}
+        demo={demo}
       />
     </div>
   )
