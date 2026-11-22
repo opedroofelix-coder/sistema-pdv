@@ -63,11 +63,11 @@ export function Occasions({ onPick }: { onPick: (o: Occasion) => void }) {
   )
 
   return (
-    <section ref={root} className="occasions" id="ocasioes" aria-labelledby="occ-title">
+    <section ref={root} className="occasions" id="ocasioes" data-bg="#c9bdf2" data-fg="#141414" aria-labelledby="occ-title">
       <div className="occ-head">
-        <p className="eyebrow">Para cada momento</p>
-        <h2 id="occ-title" className="section-title">
-          Escolha pela <em>ocasião</em>
+        <p className="eyebrow">(03) — Para cada momento</p>
+        <h2 id="occ-title" className="display">
+          Pela <span className="display-serif">ocasião</span>
         </h2>
         <div className="occ-progress" aria-hidden>
           <span className="occ-progress-bar" />

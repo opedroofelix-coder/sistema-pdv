@@ -29,7 +29,7 @@ export function Marquee() {
           const sign = i % 2 ? -1 : 1
           pos[i] -= (0.012 + boost * 0.01) * dt * 0.06 * sign * dir
           pos[i] = gsap.utils.wrap(-50, 0, pos[i])
-          gsap.set(row, { xPercent: pos[i] })
+          gsap.set(row, { xPercent: pos[i], skewX: -boost * 0.9 * sign * dir })
         })
       }
       gsap.ticker.add(tick)
