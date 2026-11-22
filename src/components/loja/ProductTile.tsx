@@ -8,6 +8,8 @@ interface Props {
   quantity: number
   onChange: (delta: number) => void
   priority?: boolean
+  /** Sobre a seção escura da landing. */
+  night?: boolean
 }
 
 export function PriceTag({ price, swing, size = 'md' }: { price: number; swing?: number; size?: 'md' | 'lg' }) {
@@ -32,7 +34,7 @@ export function PriceTag({ price, swing, size = 'md' }: { price: number; swing?:
   )
 }
 
-export function ProductTile({ product, quantity, onChange, priority }: Props) {
+export function ProductTile({ product, quantity, onChange, priority, night }: Props) {
   const [swing, setSwing] = useState(0)
   const [imgFailed, setImgFailed] = useState(false)
   const full = quantity >= product.available
@@ -46,7 +48,7 @@ export function ProductTile({ product, quantity, onChange, priority }: Props) {
   return (
     <article className="group flex flex-col" aria-label={product.name}>
       <div className="relative">
-        <div className="aspect-[4/5] overflow-hidden rounded-[6px] bg-[var(--l-ground-2)]">
+        <div className={`aspect-[4/5] overflow-hidden rounded-[6px] ${night ? 'bg-[var(--l-night-2)]' : 'bg-[var(--l-ground-2)]'}`}>
           {showPhoto ? (
             <img
               src={product.photo_url!}
@@ -68,14 +70,18 @@ export function ProductTile({ product, quantity, onChange, priority }: Props) {
       </div>
 
       <div className="flex flex-1 flex-col pt-6">
-        <span className="loja-stamp text-[12px] text-[var(--l-ink-2)]">
+        <span className={`loja-stamp text-[12px] ${night ? 'text-[var(--l-on-night-2)]' : 'text-[var(--l-ink-2)]'}`}>
           {categoryLabel(categorize(product.name))}
         </span>
-        <h3 className="mt-0.5 line-clamp-2 text-[15px] font-semibold leading-snug text-[var(--l-ink)] sm:text-base">
+        <h3
+          className={`mt-0.5 line-clamp-2 text-[15px] font-semibold leading-snug sm:text-base ${
+            night ? 'text-[var(--l-on-night)]' : 'text-[var(--l-ink)]'
+          }`}
+        >
           {product.name}
         </h3>
         {product.available <= 2 && (
-          <p className="mt-1 text-[13px] font-medium text-[var(--l-leaf)]">
+          <p className={`mt-1 text-[13px] font-medium ${night ? 'text-[var(--l-kraft)]' : 'text-[var(--l-leaf)]'}`}>
             {product.available === 1 ? 'Só 1 disponível' : 'Só 2 disponíveis'}
           </p>
         )}

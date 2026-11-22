@@ -10,6 +10,7 @@
  */
 @import '@fontsource/kalam/latin-700.css';
 @import '@fontsource/barlow-condensed/latin-600.css';
+@import '@fontsource/barlow-condensed/latin-800.css';
 @import '@fontsource/figtree/latin-400.css';
 @import '@fontsource/figtree/latin-500.css';
 @import '@fontsource/figtree/latin-600.css';
@@ -19,13 +20,20 @@
    (mt-5, pl-10...) continuam ganhando destas classes base. */
 @layer components {
 .loja {
-  --l-ground: #f1eee7;
-  --l-ground-2: #e5e0d5;
-  --l-paper: #fcfbf7;
-  --l-ink: #1e1a16;
-  --l-ink-2: #574e45;
-  --l-line: rgba(30, 26, 22, 0.14);
-  --l-line-strong: rgba(30, 26, 22, 0.28);
+  /* Cimento do galpão, levemente esverdeado (nada de creme): as flores e o
+     kraft é que esquentam a página. */
+  --l-ground: #e9ebe3;
+  --l-ground-2: #dcdfd4;
+  --l-paper: #fbfbf7;
+  --l-ink: #17211b;
+  --l-ink-2: #4b564e;
+  /* Seção noturna (câmara fria): verde-folha quase preto. */
+  --l-night: #142019;
+  --l-night-2: #1d2b22;
+  --l-on-night: #eef0e8;
+  --l-on-night-2: #aeb8ad;
+  --l-line: rgba(23, 33, 27, 0.14);
+  --l-line-strong: rgba(23, 33, 27, 0.28);
   --l-kraft: #d4b78c;
   --l-kraft-dark: #b4935f;
   --l-action: #a3154c;
@@ -226,5 +234,59 @@
     animation: none !important;
     transition: none !important;
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* Landing                                                             */
+/* ------------------------------------------------------------------ */
+
+/* Letreiro de caixote: condensada pesada, carimbada em tamanho de galpão. */
+.loja-display {
+  font-family: var(--l-stamp);
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 0.84;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* Papel kraft: fibra fina em duas direções, sem imagem externa. */
+.loja-kraft-paper {
+  background-color: var(--l-kraft);
+  background-image:
+    repeating-linear-gradient(97deg, rgba(255, 255, 255, 0.07) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(7deg, rgba(90, 60, 25, 0.07) 0 1px, transparent 1px 7px);
+}
+
+/* Fita de cetim que atravessa a página. */
+.loja-ribbon {
+  background: linear-gradient(180deg, #b8205c 0%, var(--l-action) 45%, #7d0e39 100%);
+  color: #fff;
+  box-shadow: 0 18px 30px -18px rgba(90, 8, 40, 0.7);
+}
+.loja-ribbon-track {
+  display: flex;
+  width: max-content;
+  animation: loja-marquee 38s linear infinite;
+}
+@keyframes loja-marquee {
+  to { transform: translateX(-50%); }
+}
+
+/* Cartãozinho do buquê. */
+.loja-giftcard {
+  background: #fffdf8;
+  box-shadow:
+    0 1px 0 rgba(23, 33, 27, 0.06),
+    0 30px 60px -28px rgba(23, 33, 27, 0.55);
+}
+
+.loja-hscroll {
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(238, 240, 232, 0.35) transparent;
+}
+.loja-hscroll > * {
+  scroll-snap-align: start;
 }
 }
