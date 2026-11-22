@@ -50,6 +50,19 @@ margem histórica não muda depois.
   ativar/desativar) e histórico por produto.
 - Perfis de acesso: **dono**, **caixa** e **estoquista**.
 
+**Vitrine pública com pedido pelo WhatsApp (`/loja`)**
+- Catálogo para o cliente, sem login, lido do estoque real: só aparece o que tem
+  saldo, está ativo e não venceu. Itens iguais de lotes diferentes viram um só.
+- Leitura pela função `public_catalog()` (security definer): sai só nome, preço,
+  foto e quantidade disponível. Custo, lote e fornecedor nunca vão para o público.
+- Categorias pelo nome (buquês, cestas, arranjos, plantas, chocolates), busca e
+  sacola salva no aparelho.
+- Fechamento: nome, telefone, entrega ou retirada (endereço e quem recebe), dia e
+  horário, mensagem do cartão e forma de pagamento. O resumo abre no WhatsApp da
+  loja; nada é cobrado nem baixado do estoque até a loja confirmar no PDV.
+- Configuração: `VITE_LOJA_WHATSAPP` (número com DDD), e opcionais
+  `VITE_LOJA_NOME`, `VITE_LOJA_CIDADE`, `VITE_LOJA_INSTAGRAM`.
+
 **Integrações**
 - **Loja virtual (Nuvemshop)**: estoque único entre balcão e site. Mudanças de
   estoque entram numa fila no banco e são enviadas por Edge Function; pedido pago

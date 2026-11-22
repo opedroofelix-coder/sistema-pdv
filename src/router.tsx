@@ -26,6 +26,10 @@ function ProtectedShell({ children }: { children: React.ReactNode }) {
 export const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
   { path: '/signup', element: <Signup /> },
+  // Vitrine pública da floricultura (sem login). Carregada sob demanda: o
+  // cliente não baixa o app interno, e o app interno não baixa as fontes da
+  // vitrine.
+  { path: '/loja', lazy: async () => ({ Component: (await import('./pages/Loja')).Loja }) },
   {
     path: '/',
     element: (
