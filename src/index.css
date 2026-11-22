@@ -1,0 +1,311 @@
+@import "tailwindcss";
+
+/* Plus Jakarta Sans auto-hospedada (decisão #70, supera a Geist da #35) --
+   arquivos .woff2 locais via @fontsource, não CDN: precisa funcionar no modo
+   offline do PWA (Sprint 4), onde o service worker faz o precache dos assets
+   do próprio build. Só o subconjunto `latin` (cobre toda a acentuação do
+   português) e só os 4 pesos usados no app, pra o precache não carregar
+   cirílico/vietnamita à toa. */
+@import "@fontsource/plus-jakarta-sans/latin-400.css";
+@import "@fontsource/plus-jakarta-sans/latin-500.css";
+@import "@fontsource/plus-jakarta-sans/latin-600.css";
+@import "@fontsource/plus-jakarta-sans/latin-700.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Camada única de design tokens (DESIGN.md, seção "Tokens"). Valores por
+ * tema em :root/.dark, expostos como utilitários Tailwind via `@theme
+ * inline` (var(--x) em vez de literal -- é assim que o Tailwind v4 gera
+ * `bg-surface`, `text-ink` etc. já resolvendo pro valor certo do tema, sem
+ * precisar de `dark:` repetido em cada componente). Este projeto usa Tailwind
+ * v4 "CSS-first": não há tailwind.config.* -- este bloco é o equivalente.
+ *
+ * Tema Safira (decisão #70): visual de vidro (glass). `--surface` é
+ * TRANSLÚCIDO de propósito -- painéis, campos e linhas deixam passar as luzes
+ * azuis do fundo (`--blob-*`, pintadas uma vez só no body e nas telas de tela
+ * cheia via `.app-bg`). `--surface-raised` é a versão quase opaca, pra modal:
+ * vidro translúcido sobre o véu escuro do modal ficaria cinza e ilegível.
+ */
+:root {
+  --page: #eef3fb;
+  --surface: rgba(255, 255, 255, 0.62);
+  --surface-raised: rgba(255, 255, 255, 0.94);
+  --surface-secondary: rgba(255, 255, 255, 0.78);
+  /* Fundo dos campos (input/select/textarea), um degrau mais branco que o
+     vidro pra o campo se destacar dentro do painel. */
+  --field: rgba(255, 255, 255, 0.85);
+  /* Linha fina (divisórias, campos). A borda do vidro é outra: clara, dá o
+     "fio de luz" na aresta do painel. */
+  --border: rgba(11, 27, 58, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.85);
+  --glass-shadow: 0 8px 32px rgba(20, 40, 90, 0.1);
+  --ink: #0b1b3a;
+  --ink-secondary: #3c4c6b;
+  --ink-soft: #52627f;
+  /* Primária azul royal (decisão #70, supera o preto/branco da #34). Texto
+     branco sobre ela passa 4,5:1. */
+  --primary: #1d4ed8;
+  --primary-hover: #1e40af;
+  --primary-content: #ffffff;
+  /* Acento = a própria primária: o acento existia pra dar cor a links e
+     emblemas enquanto a primária era preto/branco (decisão #34); com a
+     primária azul, um segundo tom só competiria com ela. */
+  --accent: #1d4ed8;
+  --success: #15803d;
+  --warning: #b45309;
+  --danger: #b91c1c;
+  --danger-bg: #fde2e2;
+  --danger-border: #f5a3a3;
+  /* Selo "importado" e preço médio de mercado: ciano, pra não se confundir
+     com a primária (que agora também é azul). */
+  --info: #0e7490;
+  --overlay: rgba(11, 27, 58, 0.35);
+  --blob-1: #93c5fd;
+  --blob-2: #c7d2fe;
+  --blob-3: #bae6fd;
+  /* Gráfico entradas × saídas do Financeiro (decisão #72): azul (= primária)
+     pras entradas, laranja pras saídas -- par validado com o validador de
+     paleta da skill de dataviz sobre o fundo Safira (CVD ΔE ~30). */
+  --chart-in: #1d4ed8;
+  --chart-out: #c2410c;
+}
+
+/* Safira escura (decisão #70, pedido do dono): azul-marinho com vidro fumê;
+   a primária clareia e o texto sobre ela escurece, igual à lógica da #34. */
+.dark {
+  --page: #060b18;
+  --surface: rgba(255, 255, 255, 0.06);
+  --surface-raised: rgba(17, 25, 45, 0.96);
+  --surface-secondary: rgba(255, 255, 255, 0.1);
+  --field: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-shadow: 0 8px 40px rgba(0, 0, 0, 0.45);
+  --ink: #eaf0fb;
+  --ink-secondary: #b9c6dd;
+  --ink-soft: #8c9ab5;
+  --primary: #60a5fa;
+  --primary-hover: #93c5fd;
+  --primary-content: #06122b;
+  --accent: #60a5fa;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --danger-bg: rgba(248, 113, 113, 0.14);
+  --danger-border: rgba(248, 113, 113, 0.4);
+  --info: #67e8f9;
+  --overlay: rgba(0, 0, 0, 0.55);
+  --blob-1: rgba(37, 99, 235, 0.45);
+  --blob-2: rgba(30, 58, 138, 0.6);
+  --blob-3: rgba(14, 116, 144, 0.4);
+  --chart-in: #3b82f6;
+  --chart-out: #ea580c;
+}
+
+@theme {
+  /* Raio padrão de painel (Card, PDV, KPI, modais) -- decisão #70. Botões e
+     campos continuam em rounded-xl (12px). */
+  --radius-panel: 20px;
+}
+
+@theme inline {
+  /* Plus Jakarta Sans (decisão #70) -- fallback pra system-ui se o arquivo de
+     fonte falhar em carregar/cachear. */
+  --font-sans:
+    'Plus Jakarta Sans', system-ui, 'Segoe UI', Roboto, sans-serif;
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-content: var(--primary-content);
+  --color-accent: var(--accent);
+
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-field: var(--field);
+  --color-border: var(--border);
+  --color-ink: var(--ink);
+  --color-ink-secondary: var(--ink-secondary);
+  --color-ink-soft: var(--ink-soft);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+  --color-danger-border: var(--danger-border);
+  --color-info: var(--info);
+  --color-chart-in: var(--chart-in);
+  --color-chart-out: var(--chart-out);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+/* Loader padrão (PulseLoader, DESIGN.md "Loader padrão"): pulso suave de
+   opacidade + leve escala -- o `animate-pulse` padrão do Tailwind é mais
+   abrupto demais para um indicador que fica visível por segundos. */
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.92);
+  }
+}
+.animate-pulse-soft {
+  animation: pulse-soft 1.4s ease-in-out infinite;
+}
+
+/* Fundo da Safira: a cor da página + três luzes difusas, pintado num lugar
+   só. `fixed` pra as luzes não rolarem junto com o conteúdo (no iOS o
+   navegador ignora e rola -- fica bom do mesmo jeito). Também usado nas telas
+   de tela cheia (recebimento), que cobrem o body. */
+body,
+.app-bg {
+  background-color: var(--page);
+  background-image:
+    radial-gradient(circle at 8% 10%, var(--blob-1) 0, transparent 38%),
+    radial-gradient(circle at 92% 18%, var(--blob-2) 0, transparent 40%),
+    radial-gradient(circle at 60% 95%, var(--blob-3) 0, transparent 42%);
+  background-attachment: fixed;
+}
+
+input[type='checkbox'] {
+  accent-color: var(--primary);
+  width: 16px;
+  height: 16px;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--ink);
+}
+
+@layer components {
+/* Vidro (decisão #70): o painel padrão do app. `.glass` = fundo translúcido +
+   aresta clara + sombra; `.glass-blur` acrescenta o desfoque do que está
+   atrás. O desfoque só vai nos painéis grandes e fixos (Card, menu, modais):
+   em lista longa (centenas de cards no /estoque) ele custa caro pra rolar, e
+   como o fundo já é difuso a diferença visual é pequena. */
+.glass {
+  background-color: var(--surface);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+.glass-blur {
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  backdrop-filter: blur(24px) saturate(150%);
+}
+
+/* Campo padrão (decisão #71): toda caixa de texto, número, data, select e
+   textarea solta usa `.field` em vez de repetir as classes. 48px de altura
+   (alvo de toque), cantos de 14px, halo azul no foco. `.field-sm` (40px) é
+   pra grades densas de edição (conferência do lote, edição inline). */
+.field {
+  box-sizing: border-box;
+  height: 48px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background-color: var(--field);
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.field::placeholder {
+  color: var(--ink-soft);
+}
+.field:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 16%, transparent);
+}
+.field:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.field-sm {
+  height: 40px;
+  padding: 0 10px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+textarea.field {
+  height: auto;
+  padding: 10px 14px;
+}
+select.field {
+  appearance: none;
+  padding-right: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2352627F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+.dark select.field {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%238C9AB5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+.dark .field {
+  color-scheme: dark;
+}
+
+/* Véu dos modais: um tom só pro app inteiro (antes `bg-black/50` repetido em
+   cada modal), com desfoque do que fica atrás. */
+.modal-backdrop {
+  background-color: var(--overlay);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+}
+
+/* Cópia de impressão de `.receipt-sheet`/`.label-sheet`, renderizada via
+   createPortal como filho direto de <body> (src/components/ui/PrintPortal.tsx).
+   Fora de impressão fica fora do fluxo (display: none -- diferente de
+   `visibility: hidden`, não ocupa altura nenhuma), então nunca conta pra
+   altura de nenhuma página impressa. */
+.print-portal {
+  display: none;
+}
+
+@media print {
+  /* Impressão é sempre papel branco, sem o fundo da tela. */
+  body {
+    background: #fff !important;
+  }
+  /* Impressora térmica de 80mm (ex.: POS-8370): a página precisa ter a largura
+     da bobina e a altura do próprio conteúdo. Sem isto o navegador usa A4
+     (297mm de altura) e a térmica com mídia de gap corta várias vezes um único
+     cupom. `size: 80mm auto` -> a impressora avança e corta 1 vez, do tamanho
+     do cupom. */
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
+  /* A correção anterior (visibility: hidden + position: absolute) reduziu de
+     ~9 pra ~5 folhas mas não eliminou: ancestrais com `visibility: hidden`
+     (grade do PDV, carrinho, SalesHistory etc.) continuam ocupando altura
+     real no fluxo do documento, e o navegador soma essa altura invisível pra
+     decidir onde cortar a página `auto`. Correção definitiva: esconder a
+     aplicação inteira (#root) e imprimir só a cópia em `.print-portal`, que
+     passa a ser a ÚNICA coisa que sobra no body -- nada mais contribui pra
+     altura da página. */
+  body > #root {
+    display: none;
+  }
+  .print-portal {
+    display: block;
+  }
+  .label {
+    break-inside: avoid;
+  }
+}
