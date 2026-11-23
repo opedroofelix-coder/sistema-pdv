@@ -14,7 +14,7 @@ export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <div role="group" aria-label="Tema" className="grid grid-cols-3 gap-0.5 rounded-full bg-border p-1">
+    <div role="group" aria-label="Tema" className="grid grid-cols-3 gap-0.5 rounded-full glass-chip p-1">
       {OPTIONS.map(({ value, icon: Icon, label }) => {
         const active = theme === value
         return (
@@ -25,7 +25,7 @@ export function ThemeToggle() {
             onClick={() => setTheme(value)}
             className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-full px-2.5 text-[13px] transition-colors ${
               active
-                ? 'bg-surface-raised font-bold text-primary shadow-md shadow-ink/10'
+                ? 'bg-action font-semibold text-action-content shadow-md shadow-ink/10'
                 : 'font-semibold text-ink-secondary hover:text-ink'
             }`}
           >

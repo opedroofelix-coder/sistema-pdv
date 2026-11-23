@@ -1,4 +1,4 @@
-# Especificação de Interface — PDV Leilão
+# Especificação de Interface — Sistema PDV (tema Pétalas)
 
 Referência visual das telas. Complementa o `CLAUDE.md` (que trata de regras de
 negócio e dados). Ao implementar ou refatorar uma tela, seguir esta descrição.
@@ -9,55 +9,63 @@ negócio e dados). Ao implementar ou refatorar uma tela, seguir esta descrição
 
 - **Densidade alta, sem poluição**: o operador usa o sistema o dia inteiro; priorizar
   informação visível sem rolagem em vez de espaçamento generoso.
-- **Uma ação principal por tela**, sempre na cor primária — azul royal da Safira
-  (decisão #70, supera o preto/branco da #34): `#1D4ED8` claro / `#60A5FA` escuro,
-  com sombra suave na própria cor.
+- **Uma ação principal por tela**, no botão escuro de ação (`--action`, tinta
+  `#1B1420` no claro / quase branco no escuro) com brilho rosado e reflexo
+  passando (Shimmer Button, Magic UI).
+- **Rosa é a cor da marca** (`--primary`, `#C4306A` claro / `#FF7AA6` escuro):
+  seleção, item ativo do menu, links e gráficos. Nunca em blocos grandes.
 - **Hierarquia por tamanho, não por cor**: valores monetários grandes, rótulos pequenos
-  em cinza-azulado. Cor só para semântica (verde/vermelho/âmbar); links e emblemas
-  sem preenchimento usam `--accent`, que na Safira é a própria primária.
-- **Vidro (glass), tema Safira (decisão #70)**: o fundo da página tem três luzes
-  azuis difusas (pintadas uma vez só no `body`; telas de tela cheia usam
-  `.app-bg`). Painéis são vidro: `.glass` (fundo translúcido `--surface` + aresta
-  clara `--glass-border` + sombra `--glass-shadow`) e, nos painéis grandes e
-  fixos, `.glass-blur` (desfoque do que está atrás). Lista longa (cards do
-  `/estoque`, conferência do lote) usa só `.glass`, sem desfoque — custa caro
-  pra rolar e o fundo já é difuso.
+  em cinza-ameixa. Cor só para semântica (verde/vermelho/âmbar).
+- **Vidro sobre pétalas, tema Pétalas** (substitui o tema Safira): o fundo da
+  página tem quatro manchas desfocadas (rosa, pêssego, lilás, menta) e pétalas e
+  folhas grandes em silhueta (`.petal-field`, no `index.html`, fixo atrás de
+  todas as telas). Painéis são vidro: `.glass` (fundo translúcido `--surface` +
+  aresta de luz em `inset` + sombra macia) e, nos painéis grandes e fixos,
+  `.glass-blur`. Lista longa usa só `.glass`, sem desfoque.
+- **Vidro d'água** (`.liquid`): refração real do fundo via filtro SVG `#water`
+  (no `index.html`). Só no menu lateral, no dock do celular e em painéis de
+  destaque. O Chromium aplica a refração; nos outros navegadores fica o vidro
+  fosco (a classe `.water` no `<html>` é ligada pelo `ThemeProvider`).
+- **Efeitos Magic UI, recriados em CSS** (sem dependência nova): Magic Card
+  (borda acende onde o cursor passa, no `Card`), Shimmer Button (botão
+  primário), Number Ticker (`ui/NumberTicker`, números do Dashboard), Blur Fade
+  (`.blur-fade`, entrada dos blocos), Border Beam (`.beam`, feixe na borda de um
+  painel de destaque) e troca de tema com revelação circular. Todos respeitam
+  "reduzir movimento".
+- **Tema claro é o padrão** (migration 0023). Escuro e Automático continuam no
+  menu do usuário.
 - **Modais**: véu `.modal-backdrop` (um tom só, com desfoque) e painel
-  `Card raised` (quase opaco, `--surface-raised`) — vidro translúcido sobre o véu
-  ficaria cinza. Menus suspensos e toasts também usam `--surface-raised`.
-- **Cantos**: painéis em `rounded-panel` (20px); botões e campos em 14px
-  (10px no tamanho pequeno); pílulas em `rounded-full`.
-- Fonte **Plus Jakarta Sans** (auto-hospedada, só o subconjunto latin), pesos
-  400–700.
+  `Card raised` (quase opaco, `--surface-raised`). Menus suspensos e toasts
+  também usam `--surface-raised`.
+- **Cantos**: painéis em `rounded-panel` (24px), menu lateral 28px; botões em
+  pílula (`rounded-full`); campos em 14px.
+- Fonte **Geist** (auto-hospedada via `@fontsource/geist`, só o subconjunto
+  latin), pesos 400–700. Títulos de tela 28–36px com espaçamento -0,035em.
 - Todos os valores em `R$ 0.000,00` (padrão brasileiro).
 
 ### Tokens
 
 | Token | Claro | Escuro |
 |-------|-------|--------|
-| Fundo da página | `#EEF3FB` | `#060B18` |
-| Luzes do fundo | `#93C5FD` · `#C7D2FE` · `#BAE6FD` | azul/marinho/petróleo translúcidos |
-| Card / superfície (vidro) | branco 62% | branco 6% |
-| Superfície elevada (modal, menu suspenso) | branco 94% | `#11192D` 96% |
-| Superfície secundária | branco 78% | branco 10% |
-| Borda (linhas, campos) | `#0B1B3A` 10% | branco 10% |
-| Aresta do vidro | branco 85% | branco 12% |
-| Texto principal | `#0B1B3A` | `#EAF0FB` |
-| Texto secundário | `#3C4C6B` | `#B9C6DD` |
-| Texto suave | `#52627F` | `#8C9AB5` |
-| Primária (ação) | `#1D4ED8` | `#60A5FA` |
-| Primária, hover | `#1E40AF` | `#93C5FD` |
-| Texto sobre primária | `#FFFFFF` | `#06122B` |
-| Acento (links e emblemas) | `#1D4ED8` | `#60A5FA` |
-| Info (selo importado, preço médio) | `#0E7490` | `#67E8F9` |
-| Sucesso (texto) | `#15803D` | `#4ADE80` |
-| Alerta/âmbar | `#B45309` | `#FBBF24` |
-| Erro (texto) | `#B91C1C` | `#F87171` |
-| Erro (fundo) | `#FDE2E2` | vermelho 14% |
-| Erro (borda) | `#F5A3A3` | vermelho 40% |
+| Fundo da página | `#FBF6F8` | `#0C0A10` |
+| Manchas do fundo | `#FFB3CB` · `#FFD0A8` · `#CBB8FF` · `#A8ECD0` | versões profundas das mesmas |
+| Card / superfície (vidro) | branco 50% | ameixa 46% |
+| Superfície elevada (modal, menu suspenso) | branco 95% | `#20192A` 96% |
+| Chip de vidro (item ativo, secundário) | branco 72% | branco 8% |
+| Borda (linhas, campos) | `#1B1420` 9% | branco 9% |
+| Aresta do vidro | branco 85% | branco 16% |
+| Texto principal | `#1B1420` | `#F5F0F7` |
+| Texto secundário | `#4A4050` | `#CDC4D4` |
+| Texto suave | `#625868` | `#A99FB2` |
+| Ação (botão primário) | `#1B1420` | `#F5F0F7` |
+| Primária / marca (seleção, links) | `#C4306A` | `#FF7AA6` |
+| Pêssego (gradiente da marca) | `#F07A3E` | `#FFAD7D` |
+| Info (selo importado, preço médio) | `#6A4FD8` | `#B29DFF` |
+| Sucesso | `#10845C` | `#3FD39B` |
+| Alerta/âmbar | `#B36B00` | `#FFBD45` |
+| Erro | `#C62F2F` | `#FF6B6B` |
 
-Valores exatos em `src/index.css` (fonte da verdade). Campos usam o token
-`--field` (branco 85% / branco 6%).
+Valores exatos em `src/index.css` (fonte da verdade).
 
 ### Componentes (decisão #71)
 
@@ -65,17 +73,17 @@ Toda tela monta a interface com estas peças — não repetir classes soltas.
 
 | Peça | Onde mora | Como é |
 |------|-----------|--------|
-| Cabeçalho de tela | `layout/PageHeader` | título 26–30px negrito; complemento ao lado (contador, data, status); ações à direita, descem pra linha de baixo se não couberem; menu do usuário sempre no canto (só desktop) |
+| Cabeçalho de tela | `layout/PageHeader` | título 28–36px negrito; complemento ao lado (contador, data, status); ações à direita, descem pra linha de baixo se não couberem; menu do usuário sempre no canto (só desktop) |
 | Menu do usuário | `layout/UserMenu` | avatar com iniciais + nome + papel; abre painel com o seletor de tema e "Sair da conta". No celular fica na barra do topo |
-| Menu lateral | `layout/AppShell` | trilho de 76px, itens de 48px com ícone de 20px; ativo = preenchimento da primária com sombra; abre no hover (decisão #40) |
-| Botão | `ui/Button` | tamanhos `sm` 36px / `md` 48px / `lg` 56px; primário com sombra na cor, secundário com borda, perigo em vermelho tinto, fantasma só texto azul |
-| Botão de ícone | `ui/IconButton` | quadrado 36–48px, nome obrigatório (`aria-label`); editar = azul, excluir = vermelho. Substitui "✎ Editar" com borda fina e lixeira solta |
-| Campo | classe `.field` / `.field-sm` | 48px (40px no compacto), cantos 14px, foco com anel azul de 4px; `select` com seta própria |
+| Menu lateral | `layout/AppShell` | painel de vidro d'água de 240px, flutuando a 16px das bordas, sempre aberto com rótulos; ativo = chip de vidro com ícone rosa. No celular vira um dock de vidro flutuante embaixo |
+| Botão | `ui/Button` | tamanhos `sm` 36px / `md` 48px / `lg` 56px; pílulas; primário escuro com reflexo (Shimmer), secundário em chip de vidro, perigo em vermelho tinto, fantasma só texto rosa |
+| Botão de ícone | `ui/IconButton` | círculo de vidro 36–48px, nome obrigatório (`aria-label`); editar = rosa, excluir = vermelho. Substitui "✎ Editar" com borda fina e lixeira solta |
+| Campo | classe `.field` / `.field-sm` | 48px (40px no compacto), cantos 14px, foco com anel rosa de 4px; `select` com seta própria |
 | Campo de bipagem | `scanner/BarcodeInput` | 52px com ícone de leitura; dica "Enter" ou botão ✓ quando há texto |
-| Selo | `ui/Badge` | pílula 12px negrito, fundo tinto da cor, ponto opcional. Condição: novo = verde, caixa aberta = azul, usado = neutro, avaria = vermelho |
-| Seletor de período | `ui/SegmentedControl` | trilho único com a opção marcada em destaque (Dashboard → Vendas, Usuários, seletor de tema) |
-| Filtro liga/desliga | `ui/FilterChip` | pílula 40px; ligada = azul com ✓. No lugar de caixinha de seleção |
-| Estado vazio | `ui/EmptyState` | ícone num círculo azul claro, título e uma linha de orientação, borda tracejada |
+| Selo | `ui/Badge` | pílula 12px negrito, fundo tinto da cor, ponto opcional. Condição: novo = verde, caixa aberta = rosa, usado = neutro, avaria = vermelho |
+| Seletor de período | `ui/SegmentedControl` | trilho de vidro com a opção marcada em pílula escura (Dashboard → Vendas, Usuários, seletor de tema) |
+| Filtro liga/desliga | `ui/FilterChip` | pílula 40px; ligada = rosa com ✓. No lugar de caixinha de seleção |
+| Estado vazio | `ui/EmptyState` | ícone num círculo rosa claro, título e uma linha de orientação, borda tracejada |
 | Aviso (toast) | `ui/Toast` | painel elevado com ícone num círculo verde/vermelho |
 
 Títulos de seção: 17px negrito. Rótulos de grupo e de coluna: 11–12px,
@@ -278,33 +286,17 @@ lado do campo de bipagem do PDV enquanto busca o código), não pra conteúdo.
 
 ### Loader padrão (`PulseLoader`)
 
-Ícone da marca (mesma marca do `Logo`, reaproveita as mesmas
-imagens — troca por tema via CSS, `dark:hidden`/`dark:block`, sem flash)
-pulsando: opacidade e escala oscilam suavemente (`@keyframes pulse-soft` em
-`src/index.css`, mais suave que o `animate-pulse` padrão do Tailwind, que é
-abrupto demais pra um indicador que fica visível por segundos). Fundo
-transparente, nunca ocupa a tela inteira: é sempre um indicador inline no
-lugar do conteúdo que ainda não chegou (substitui os antigos
-"Carregando…"/skeletons genéricos de cada tela — e substitui também o
-loader anterior, em onda/SVG, que este componente veio para descontinuar).
-
-- **Cor**: resolvida pela própria troca de imagem por tema (igual ao
-  `Logo`) — quase-preto (`#111111`, primária do tema claro) no tema claro,
-  branca no escuro (sobre o fundo quase preto do tema escuro, a versão
-  escura não teria contraste suficiente).
-- **Tamanhos**: `size="md"` (padrão, substitui um "Carregando…" de página
-  inteira) e `size="sm"` (inline, ex.: ao lado do campo de bipagem no PDV
-  enquanto busca o produto escaneado).
-- **Uso**: `<PulseLoader />` — não bloqueia a tela (nunca desabilita outros
-  campos/ações só por estar visível; qualquer bloqueio de interação durante
-  o carregamento é uma decisão à parte, não vem do loader).
+O símbolo da marca (flor no quadrado com gradiente rosa → pêssego, o mesmo do
+`Logo`) pulsando: opacidade e escala oscilam suavemente (`@keyframes
+pulse-soft` em `src/index.css`). Fundo transparente, nunca ocupa a tela
+inteira: é sempre um indicador inline no lugar do conteúdo que ainda não
+chegou. Tamanhos `md` (padrão) e `sm` (inline, ex.: ao lado do campo de
+bipagem). Não bloqueia a tela.
 
 ### Logo (`Logo`)
 
-`src/components/ui/Logo.tsx` — mesma lógica de troca por tema: o arquivo
-original (`src/assets/logo-branco.png`) é branco com fundo transparente
-e some no tema claro, então existe uma variante escura gerada a partir dele
-(`src/assets/logo-cor.png`; `npm run generate:icons` regenera a variante e os
-ícones do PWA a partir do branco). As duas imagens ficam no DOM e a
-troca é só CSS (`dark:hidden`/`dark:block`), sem flash ao alternar tema.
-Usada no cabeçalho (`AppShell`) e nas telas de login/cadastro.
+`src/components/ui/Logo.tsx`: símbolo em SVG (flor desenhada em traço branco
+sobre gradiente rosa → pêssego, cantos de 11px) + o nome "Sistema PDV" em Geist
+negrito. Como é SVG e texto, segue o tema sozinho. `showName={false}` mostra só
+o símbolo. Os PNGs antigos em `src/assets/` ficam só para o script de ícones do
+PWA (`npm run generate:icons`).

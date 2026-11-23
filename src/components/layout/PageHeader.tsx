@@ -29,7 +29,7 @@ export function PageHeader({
         <div className="flex min-w-0 items-center gap-3">
           {leading}
           <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1">
-            <h1 className="text-[26px] font-bold tracking-tight text-ink md:text-[30px]">{title}</h1>
+            <h1 className="text-[28px] font-bold tracking-[-0.035em] text-ink md:text-[36px] md:leading-tight">{title}</h1>
             {meta}
           </div>
         </div>

@@ -11,11 +11,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<Variant, string> = {
-  // Brilho na cor da primária: o botão de ação "acende" sobre o vidro.
+  // Tema Pétalas: ação escura com brilho rosado e reflexo passando
+  // (Shimmer Button, Magic UI). O reflexo some quando desabilitado.
   primary:
-    'bg-primary text-primary-content font-bold shadow-lg shadow-primary/30 hover:bg-primary-hover disabled:opacity-40 disabled:shadow-none',
+    'shimmer bg-action text-action-content font-semibold shadow-[0_6px_18px_-6px_color-mix(in_srgb,var(--primary)_55%,transparent),inset_0_1px_0_rgba(255,255,255,0.18)] hover:bg-action-hover hover:-translate-y-px active:translate-y-0 disabled:opacity-40 disabled:shadow-none disabled:after:hidden disabled:hover:translate-y-0',
   secondary:
-    'border border-border bg-surface-secondary text-ink font-semibold hover:bg-surface-raised disabled:opacity-40',
+    'glass-chip text-ink font-semibold hover:bg-surface-raised disabled:opacity-40',
   // Destrutivo continua discreto (DESIGN.md: nunca um vermelho cheio), mas
   // com um fundo vermelho bem leve pra se distinguir do secundário.
   danger:
@@ -24,9 +25,9 @@ const variantClasses: Record<Variant, string> = {
 }
 
 const sizeClasses: Record<Size, string> = {
-  sm: 'h-9 rounded-[10px] px-3.5 text-[13px]',
-  md: 'h-12 rounded-[14px] px-5 text-[15px]',
-  lg: 'h-14 rounded-2xl px-6 text-base',
+  sm: 'h-9 rounded-full px-4 text-[13px]',
+  md: 'h-12 rounded-full px-5 text-[15px]',
+  lg: 'h-14 rounded-full px-7 text-base',
 }
 
 export function Button({
@@ -39,7 +40,7 @@ export function Button({
   return (
     <button
       disabled={disabled}
-      className={`inline-flex items-center justify-center gap-2 transition-colors disabled:cursor-not-allowed ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 transition-[background-color,transform,box-shadow] duration-150 disabled:cursor-not-allowed ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
       {...props}
     />
   )

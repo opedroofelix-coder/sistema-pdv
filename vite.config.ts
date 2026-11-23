@@ -20,8 +20,8 @@ export default defineConfig({
         name: 'Sistema PDV',
         short_name: 'Sistema PDV',
         description: 'Estoque e PDV para revenda de lotes de leilão',
-        theme_color: '#1d4ed8',
-        background_color: '#eef3fb',
+        theme_color: '#c4306a',
+        background_color: '#fbf6f8',
         display: 'standalone',
         start_url: '/',
         icons: [

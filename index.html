@@ -7,10 +7,39 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#eef3fb" />
+    <meta name="theme-color" content="#fbf6f8" />
     <title>Sistema PDV</title>
   </head>
   <body>
+    <!-- Filtro do vidro d'água (src/index.css, `.water .liquid`) e o campo de
+         pétalas atrás de todas as telas: estáticos, fora do React. -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <defs>
+        <filter id="water" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="0.006 0.009" numOctaves="2" seed="11" result="noise" />
+          <feGaussianBlur in="noise" stdDeviation="2.5" result="soft" />
+          <feDisplacementMap in="SourceGraphic" in2="soft" scale="46" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+        <symbol id="petal5" viewBox="0 0 100 100">
+          <ellipse cx="50" cy="24" rx="15" ry="24" />
+          <ellipse cx="50" cy="24" rx="15" ry="24" transform="rotate(72 50 50)" />
+          <ellipse cx="50" cy="24" rx="15" ry="24" transform="rotate(144 50 50)" />
+          <ellipse cx="50" cy="24" rx="15" ry="24" transform="rotate(216 50 50)" />
+          <ellipse cx="50" cy="24" rx="15" ry="24" transform="rotate(288 50 50)" />
+        </symbol>
+        <symbol id="leaf" viewBox="0 0 100 100"><path d="M10 90C10 45 40 12 92 8c-2 50-34 82-82 82z" /></symbol>
+      </defs>
+    </svg>
+    <div class="petal-field" aria-hidden="true">
+      <svg preserveAspectRatio="xMidYMid slice" viewBox="0 0 1440 900">
+        <use href="#petal5" x="1040" y="-40" width="300" height="300" fill="var(--blob-1)" />
+        <use href="#petal5" x="-60" y="560" width="360" height="360" fill="var(--blob-3)" />
+        <use href="#leaf" x="560" y="40" width="220" height="220" fill="var(--blob-4)" />
+        <use href="#petal5" x="820" y="600" width="240" height="240" fill="var(--blob-2)" />
+        <use href="#leaf" x="1220" y="520" width="260" height="260" fill="var(--blob-4)" />
+        <use href="#petal5" x="360" y="300" width="150" height="150" fill="var(--blob-1)" />
+      </svg>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

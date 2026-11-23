@@ -35,6 +35,13 @@ const NAV_ITEMS = [
 // papel dentro de cada tela).
 const DONO_ONLY_ROUTES = new Set(['/', '/relatorios', '/usuarios', '/fechamentos', '/financeiro'])
 
+/**
+ * Casca do app (tema Pétalas). No computador: menu lateral de vidro d'água
+ * flutuando sobre o campo de pétalas, sempre aberto, com o item ativo num
+ * chip de vidro e o ícone em rosa. No celular: barra do topo com a marca e o
+ * menu do usuário, e um dock de vidro flutuante embaixo (rola de lado quando
+ * os itens não cabem).
+ */
 export function AppShell({ children }: { children: ReactNode }) {
   const { profile, signOut } = useAuth()
   const navItems = NAV_ITEMS.filter(
@@ -42,110 +49,67 @@ export function AppShell({ children }: { children: ReactNode }) {
   )
 
   return (
-    <div className="flex min-h-screen">
-      {/* Espaçador que reserva a largura do trilho colapsado (item 9): a
-          sidebar de verdade é fixa e expande SOBRE o conteúdo no hover, então
-          o conteúdo nunca desloca (sem reflow ao passar o mouse). */}
-      <div className="hidden w-[76px] shrink-0 md:block" aria-hidden="true" />
-      {/* `group` + `w-[76px] hover:w-60`: só ícones por padrão, menu completo
-          (com rótulos) no hover -- ou no foco por teclado (`focus-within`).
-          Trilho Safira (decisão #71): cada item é uma casa de 48px com cantos
-          de 14px, centrada nos 76px do trilho (14 + 48 + 14); o ativo fica
-          azul com brilho. A casa não muda de tamanho ao expandir, então o
-          ícone não anda (decisão #54). */}
-      <aside className="group fixed inset-y-0 left-0 z-30 hidden w-[76px] flex-col overflow-hidden glass glass-blur border-y-0 border-l-0 py-4 transition-[width] duration-200 ease-out hover:w-60 hover:shadow-2xl focus-within:w-60 focus-within:shadow-2xl md:flex">
-        <div className="flex h-11 items-center">
-          <span className="flex w-[76px] shrink-0 items-center justify-center">
-            <Logo className="w-11" fit="width" />
-          </span>
-          <span className="whitespace-nowrap text-[15px] font-bold text-ink opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
-            Sistema PDV
-          </span>
+    <div className="min-h-screen md:pl-[272px]">
+      <aside className="liquid glass glass-blur fixed bottom-4 left-4 top-4 z-30 hidden w-[240px] flex-col rounded-[28px] px-3.5 py-5 md:flex">
+        <div className="px-2 pb-5">
+          <Logo />
         </div>
 
-        <div className="mx-4 mb-3 mt-3 h-px bg-border" />
-
-        <nav className="flex flex-1 flex-col gap-1.5">
+        <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto" aria-label="Menu principal">
           {navItems.map(({ to, label, icon: Icon, end }) => (
             <NavLink
               key={to}
               to={to}
               end={end}
-              title={label}
               className={({ isActive }) =>
-                `mx-3.5 flex h-12 items-center overflow-hidden rounded-[14px] text-sm transition-colors ${
+                `flex h-11 items-center gap-3 rounded-[14px] px-3 text-[15px] transition-colors ${
                   isActive
-                    ? 'bg-primary font-bold text-primary-content shadow-lg shadow-primary/30'
-                    : 'font-semibold text-ink-secondary hover:bg-surface-secondary hover:text-ink'
+                    ? 'glass-chip font-semibold text-ink [&_svg]:text-primary'
+                    : 'font-medium text-ink-secondary hover:bg-surface hover:text-ink'
                 }`
               }
             >
-              <span className="flex w-12 shrink-0 items-center justify-center">
-                <Icon size={20} />
-              </span>
-              <span className="whitespace-nowrap opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
-                {label}
-              </span>
+              <Icon size={20} aria-hidden="true" />
+              {label}
             </NavLink>
           ))}
         </nav>
 
-        <div className="mx-4 my-3 h-px bg-border" />
-
         <button
           type="button"
           onClick={signOut}
-          title="Sair"
-          className="mx-3.5 flex h-12 items-center overflow-hidden rounded-[14px] text-sm font-semibold text-ink-secondary transition-colors hover:bg-surface-secondary hover:text-ink"
+          className="mt-3 flex h-11 items-center gap-3 rounded-[14px] px-3 text-[15px] font-medium text-ink-secondary transition-colors hover:bg-surface hover:text-ink"
         >
-          <span className="flex w-12 shrink-0 items-center justify-center">
-            <LogOut size={20} />
-          </span>
-          <span className="whitespace-nowrap opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
-            Sair
-          </span>
+          <LogOut size={20} aria-hidden="true" />
+          Sair
         </button>
       </aside>
 
-      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
-        {/* Barra do topo só no celular (decisão #71): logo + menu do usuário.
-            No desktop o menu do usuário vive no cabeçalho de cada tela
-            (PageHeader), e a faixa que só mostrava o nome saiu. */}
-        <header className="flex items-center justify-between glass glass-blur border-x-0 border-t-0 shadow-none px-4 py-2 md:hidden">
-          <Logo className="h-5" />
+      <div className="flex min-h-screen min-w-0 flex-col">
+        <header className="glass glass-blur sticky top-0 z-20 flex items-center justify-between rounded-none px-4 py-2.5 md:hidden">
+          <Logo size={30} />
           <UserMenu compact />
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 pb-24 md:px-7 md:py-6">
-          {children}
-        </main>
+        <main className="flex-1 p-4 pb-28 md:py-6 md:pl-2 md:pr-7">{children}</main>
 
-        {/* Rola de lado quando não cabe (decisão #70): o dono tem 8 itens, e em
-            390px eles se sobrepunham. Cada item tem largura mínima de 72px. */}
-        <nav className="fixed inset-x-0 bottom-0 flex overflow-x-auto glass glass-blur border-x-0 border-b-0 shadow-none md:hidden">
+        <nav
+          aria-label="Menu"
+          className="liquid glass glass-blur fixed bottom-[max(12px,env(safe-area-inset-bottom))] left-3 right-3 z-30 flex gap-1 overflow-x-auto rounded-[26px] p-2 md:hidden"
+        >
           {navItems.map(({ to, label, icon: Icon, end }) => (
             <NavLink
               key={to}
               to={to}
               end={end}
               className={({ isActive }) =>
-                `flex min-w-[72px] flex-1 shrink-0 flex-col items-center gap-0.5 py-2 text-xs whitespace-nowrap transition-colors ${
-                  isActive ? 'font-bold text-primary' : 'font-medium text-ink-soft'
+                `flex min-w-[64px] flex-1 shrink-0 flex-col items-center gap-0.5 rounded-[18px] px-1 py-1.5 text-[11px] whitespace-nowrap transition-colors ${
+                  isActive ? 'glass-chip font-semibold text-primary' : 'font-medium text-ink-soft'
                 }`
               }
             >
-              {({ isActive }) => (
-                <>
-                  <span
-                    className={`inline-flex h-8 w-12 items-center justify-center rounded-full ${
-                      isActive ? 'bg-primary/[0.14]' : ''
-                    }`}
-                  >
-                    <Icon size={20} />
-                  </span>
-                  {label}
-                </>
-              )}
+              <Icon size={20} aria-hidden="true" />
+              {label}
             </NavLink>
           ))}
         </nav>

@@ -17,9 +17,9 @@ const toneClasses = {
   danger: 'text-danger',
 }
 const sizeClasses = {
-  sm: 'h-9 w-9 rounded-[10px]',
-  md: 'h-10 w-10 rounded-xl',
-  lg: 'h-12 w-12 rounded-[14px]',
+  sm: 'h-9 w-9 rounded-full',
+  md: 'h-10 w-10 rounded-full',
+  lg: 'h-12 w-12 rounded-full',
 }
 
 /** Botão só de ícone (decisão #71): editar, excluir, imprimir, câmera,
@@ -35,7 +35,7 @@ export function IconButton({
 }: IconButtonProps) {
   const lookClass =
     look === 'outline'
-      ? 'border border-border bg-field hover:bg-surface-raised'
+      ? 'glass-chip hover:bg-surface-raised'
       : 'bg-transparent hover:bg-surface-secondary'
   return (
     <button

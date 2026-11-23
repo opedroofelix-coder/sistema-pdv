@@ -1,124 +1,125 @@
 @import "tailwindcss";
 
-/* Plus Jakarta Sans auto-hospedada (decisão #70, supera a Geist da #35) --
-   arquivos .woff2 locais via @fontsource, não CDN: precisa funcionar no modo
-   offline do PWA (Sprint 4), onde o service worker faz o precache dos assets
-   do próprio build. Só o subconjunto `latin` (cobre toda a acentuação do
-   português) e só os 4 pesos usados no app, pra o precache não carregar
-   cirílico/vietnamita à toa. */
-@import "@fontsource/plus-jakarta-sans/latin-400.css";
-@import "@fontsource/plus-jakarta-sans/latin-500.css";
-@import "@fontsource/plus-jakarta-sans/latin-600.css";
-@import "@fontsource/plus-jakarta-sans/latin-700.css";
+/* Geist auto-hospedada (tema Pétalas) -- arquivos .woff2 locais via
+   @fontsource, não CDN: precisa funcionar no modo offline do PWA, onde o
+   service worker faz o precache dos assets do próprio build. Só o subconjunto
+   `latin` (cobre toda a acentuação do português) e os 4 pesos usados. */
+@import "@fontsource/geist/latin-400.css";
+@import "@fontsource/geist/latin-500.css";
+@import "@fontsource/geist/latin-600.css";
+@import "@fontsource/geist/latin-700.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
  * Camada única de design tokens (DESIGN.md, seção "Tokens"). Valores por
  * tema em :root/.dark, expostos como utilitários Tailwind via `@theme
- * inline` (var(--x) em vez de literal -- é assim que o Tailwind v4 gera
- * `bg-surface`, `text-ink` etc. já resolvendo pro valor certo do tema, sem
- * precisar de `dark:` repetido em cada componente). Este projeto usa Tailwind
- * v4 "CSS-first": não há tailwind.config.* -- este bloco é o equivalente.
+ * inline`. Este projeto usa Tailwind v4 "CSS-first": não há
+ * tailwind.config.* -- este bloco é o equivalente.
  *
- * Tema Safira (decisão #70): visual de vidro (glass). `--surface` é
- * TRANSLÚCIDO de propósito -- painéis, campos e linhas deixam passar as luzes
- * azuis do fundo (`--blob-*`, pintadas uma vez só no body e nas telas de tela
- * cheia via `.app-bg`). `--surface-raised` é a versão quase opaca, pra modal:
- * vidro translúcido sobre o véu escuro do modal ficaria cinza e ilegível.
+ * Tema Pétalas: vidro sobre um campo de pétalas desfocadas (rosa, pêssego,
+ * lilás e menta). `--surface` é TRANSLÚCIDO de propósito; `--surface-raised`
+ * é a versão quase opaca, pra modal e menus. A ação principal é escura
+ * (`--action`, com brilho "shimmer"); o rosa (`--primary`) marca seleção,
+ * links e o item ativo. Tema claro é o padrão.
  */
 :root {
-  --page: #eef3fb;
-  --surface: rgba(255, 255, 255, 0.62);
-  --surface-raised: rgba(255, 255, 255, 0.94);
-  --surface-secondary: rgba(255, 255, 255, 0.78);
-  /* Fundo dos campos (input/select/textarea), um degrau mais branco que o
-     vidro pra o campo se destacar dentro do painel. */
-  --field: rgba(255, 255, 255, 0.85);
-  /* Linha fina (divisórias, campos). A borda do vidro é outra: clara, dá o
-     "fio de luz" na aresta do painel. */
-  --border: rgba(11, 27, 58, 0.1);
+  --page: #fbf6f8;
+  --surface: rgba(255, 255, 255, 0.5);
+  --surface-raised: rgba(255, 255, 255, 0.95);
+  --surface-secondary: rgba(255, 255, 255, 0.72);
+  --field: rgba(255, 255, 255, 0.82);
+  --border: rgba(27, 20, 32, 0.09);
   --glass-border: rgba(255, 255, 255, 0.85);
-  --glass-shadow: 0 8px 32px rgba(20, 40, 90, 0.1);
-  --ink: #0b1b3a;
-  --ink-secondary: #3c4c6b;
-  --ink-soft: #52627f;
-  /* Primária azul royal (decisão #70, supera o preto/branco da #34). Texto
-     branco sobre ela passa 4,5:1. */
-  --primary: #1d4ed8;
-  --primary-hover: #1e40af;
+  --glass-edge-dim: rgba(255, 255, 255, 0.35);
+  --glass-shadow: 0 1px 2px rgba(60, 20, 50, 0.06), 0 12px 32px -8px rgba(90, 30, 70, 0.14);
+  --ink: #1b1420;
+  --ink-secondary: #4a4050;
+  --ink-soft: #625868;
+  /* Rosa da marca: seleção, links, item ativo, gráficos. Branco sobre ele
+     passa 4,5:1. */
+  --primary: #c4306a;
+  --primary-hover: #a8255a;
   --primary-content: #ffffff;
-  /* Acento = a própria primária: o acento existia pra dar cor a links e
-     emblemas enquanto a primária era preto/branco (decisão #34); com a
-     primária azul, um segundo tom só competiria com ela. */
-  --accent: #1d4ed8;
-  --success: #15803d;
-  --warning: #b45309;
-  --danger: #b91c1c;
-  --danger-bg: #fde2e2;
-  --danger-border: #f5a3a3;
-  /* Selo "importado" e preço médio de mercado: ciano, pra não se confundir
-     com a primária (que agora também é azul). */
-  --info: #0e7490;
-  --overlay: rgba(11, 27, 58, 0.35);
-  --blob-1: #93c5fd;
-  --blob-2: #c7d2fe;
-  --blob-3: #bae6fd;
-  /* Gráfico entradas × saídas do Financeiro (decisão #72): azul (= primária)
-     pras entradas, laranja pras saídas -- par validado com o validador de
-     paleta da skill de dataviz sobre o fundo Safira (CVD ΔE ~30). */
-  --chart-in: #1d4ed8;
-  --chart-out: #c2410c;
+  --accent: #c4306a;
+  --peach: #f07a3e;
+  /* Ação principal (botão primário): tinta escura com brilho rosado. */
+  --action: #1b1420;
+  --action-hover: #33263a;
+  --action-content: #ffffff;
+  --success: #10845c;
+  --warning: #b36b00;
+  --danger: #c62f2f;
+  --danger-bg: #fde4e4;
+  --danger-border: #f3a9a9;
+  --info: #6a4fd8;
+  --overlay: rgba(27, 20, 32, 0.28);
+  --blob-1: #ffb3cb;
+  --blob-2: #ffd0a8;
+  --blob-3: #cbb8ff;
+  --blob-4: #a8ecd0;
+  --petal-opacity: 0.55;
+  --chart-in: #c4306a;
+  --chart-out: #6a4fd8;
 }
 
-/* Safira escura (decisão #70, pedido do dono): azul-marinho com vidro fumê;
-   a primária clareia e o texto sobre ela escurece, igual à lógica da #34. */
 .dark {
-  --page: #060b18;
-  --surface: rgba(255, 255, 255, 0.06);
-  --surface-raised: rgba(17, 25, 45, 0.96);
-  --surface-secondary: rgba(255, 255, 255, 0.1);
+  --page: #0c0a10;
+  --surface: rgba(28, 22, 36, 0.46);
+  --surface-raised: rgba(32, 25, 42, 0.96);
+  --surface-secondary: rgba(255, 255, 255, 0.08);
   --field: rgba(255, 255, 255, 0.06);
-  --border: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.12);
-  --glass-shadow: 0 8px 40px rgba(0, 0, 0, 0.45);
-  --ink: #eaf0fb;
-  --ink-secondary: #b9c6dd;
-  --ink-soft: #8c9ab5;
-  --primary: #60a5fa;
-  --primary-hover: #93c5fd;
-  --primary-content: #06122b;
-  --accent: #60a5fa;
-  --success: #4ade80;
-  --warning: #fbbf24;
-  --danger: #f87171;
-  --danger-bg: rgba(248, 113, 113, 0.14);
-  --danger-border: rgba(248, 113, 113, 0.4);
-  --info: #67e8f9;
-  --overlay: rgba(0, 0, 0, 0.55);
-  --blob-1: rgba(37, 99, 235, 0.45);
-  --blob-2: rgba(30, 58, 138, 0.6);
-  --blob-3: rgba(14, 116, 144, 0.4);
-  --chart-in: #3b82f6;
-  --chart-out: #ea580c;
+  --border: rgba(255, 255, 255, 0.09);
+  --glass-border: rgba(255, 255, 255, 0.16);
+  --glass-edge-dim: rgba(255, 255, 255, 0.05);
+  --glass-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 16px 40px -10px rgba(0, 0, 0, 0.55);
+  --ink: #f5f0f7;
+  --ink-secondary: #cdc4d4;
+  --ink-soft: #a99fb2;
+  --primary: #ff7aa6;
+  --primary-hover: #ff9dbd;
+  --primary-content: #1a0710;
+  --accent: #ff7aa6;
+  --peach: #ffad7d;
+  --action: #f5f0f7;
+  --action-hover: #ffffff;
+  --action-content: #140f19;
+  --success: #3fd39b;
+  --warning: #ffbd45;
+  --danger: #ff6b6b;
+  --danger-bg: rgba(255, 107, 107, 0.14);
+  --danger-border: rgba(255, 107, 107, 0.4);
+  --info: #b29dff;
+  --overlay: rgba(0, 0, 0, 0.5);
+  --blob-1: #7d1d49;
+  --blob-2: #6e3517;
+  --blob-3: #38277f;
+  --blob-4: #0e5240;
+  --petal-opacity: 0.35;
+  --chart-in: #ff7aa6;
+  --chart-out: #b29dff;
 }
 
 @theme {
-  /* Raio padrão de painel (Card, PDV, KPI, modais) -- decisão #70. Botões e
-     campos continuam em rounded-xl (12px). */
-  --radius-panel: 20px;
+  /* Raio padrão de painel (Card, PDV, KPI, modais) -- tema Pétalas. Botões
+     e campos continuam em 14px. */
+  --radius-panel: 24px;
 }
 
 @theme inline {
-  /* Plus Jakarta Sans (decisão #70) -- fallback pra system-ui se o arquivo de
-     fonte falhar em carregar/cachear. */
+  /* Geist -- fallback pra system-ui se o arquivo de fonte falhar em
+     carregar/cachear. */
   --font-sans:
-    'Plus Jakarta Sans', system-ui, 'Segoe UI', Roboto, sans-serif;
+    'Geist', system-ui, 'Segoe UI', Roboto, sans-serif;
 
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-primary-content: var(--primary-content);
   --color-accent: var(--accent);
+  --color-action: var(--action);
+  --color-action-hover: var(--action-hover);
+  --color-action-content: var(--action-content);
+  --color-peach: var(--peach);
 
   --color-page: var(--page);
   --color-surface: var(--surface);
@@ -144,6 +145,10 @@ body,
 #root {
   height: 100%;
 }
+#root {
+  position: relative;
+  z-index: 1;
+}
 
 /* Loader padrão (PulseLoader, DESIGN.md "Loader padrão"): pulso suave de
    opacidade + leve escala -- o `animate-pulse` padrão do Tailwind é mais
@@ -163,18 +168,30 @@ body,
   animation: pulse-soft 1.4s ease-in-out infinite;
 }
 
-/* Fundo da Safira: a cor da página + três luzes difusas, pintado num lugar
-   só. `fixed` pra as luzes não rolarem junto com o conteúdo (no iOS o
-   navegador ignora e rola -- fica bom do mesmo jeito). Também usado nas telas
-   de tela cheia (recebimento), que cobrem o body. */
+/* Fundo Pétalas: a cor da página + quatro manchas desfocadas + pétalas e
+   folhas grandes em silhueta (o que o vidro deixa ver e, no vidro d'água,
+   refrata). Pintado num lugar só; `fixed` pra não rolar com o conteúdo. */
 body,
 .app-bg {
   background-color: var(--page);
   background-image:
-    radial-gradient(circle at 8% 10%, var(--blob-1) 0, transparent 38%),
-    radial-gradient(circle at 92% 18%, var(--blob-2) 0, transparent 40%),
-    radial-gradient(circle at 60% 95%, var(--blob-3) 0, transparent 42%);
+    radial-gradient(circle at 6% 8%, var(--blob-1) 0, transparent 34%),
+    radial-gradient(circle at 94% 16%, var(--blob-2) 0, transparent 32%),
+    radial-gradient(circle at 46% 104%, var(--blob-3) 0, transparent 38%),
+    radial-gradient(circle at 86% 92%, var(--blob-4) 0, transparent 26%);
   background-attachment: fixed;
+}
+.petal-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.petal-field svg {
+  width: 100%;
+  height: 100%;
+  opacity: var(--petal-opacity);
 }
 
 input[type='checkbox'] {
@@ -187,22 +204,183 @@ body {
   margin: 0;
   font-family: var(--font-sans);
   color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+::selection {
+  background: var(--primary);
+  color: var(--primary-content);
+}
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+/* Campos já mostram o próprio foco (halo do `.field` ou do invólucro, como
+   o campo de bipagem); o contorno global ali ficaria duplo. */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+
+/* Troca de tema com revelação circular (Animated Theme Toggler, Magic UI). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }
 
 @layer components {
-/* Vidro (decisão #70): o painel padrão do app. `.glass` = fundo translúcido +
-   aresta clara + sombra; `.glass-blur` acrescenta o desfoque do que está
-   atrás. O desfoque só vai nos painéis grandes e fixos (Card, menu, modais):
-   em lista longa (centenas de cards no /estoque) ele custa caro pra rolar, e
-   como o fundo já é difuso a diferença visual é pequena. */
+/* Vidro (tema Pétalas): o painel padrão do app. `.glass` = fundo
+   translúcido + aresta de luz (inset no canto de cima/esquerda, mais fraca
+   embaixo/direita) + sombra macia; `.glass-blur` acrescenta o desfoque do que
+   está atrás. Desfoque só nos painéis grandes e fixos: em lista longa ele
+   custa caro pra rolar. */
 .glass {
   background-color: var(--surface);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+  border: 0;
+  box-shadow:
+    inset 1px 1px 0 var(--glass-border),
+    inset -1px -1px 0 var(--glass-edge-dim),
+    var(--glass-shadow);
 }
 .glass-blur {
-  -webkit-backdrop-filter: blur(24px) saturate(150%);
-  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+  backdrop-filter: blur(18px) saturate(170%);
+}
+/* Vidro d'água: refração real do fundo (filtro SVG #water, declarado no
+   index.html). Só o Chromium aplica `url()` no backdrop-filter; o
+   ThemeProvider liga a classe `.water` no <html> quando dá, e nos outros
+   navegadores fica o vidro fosco do `.glass-blur`. Usado só no menu, no
+   dock do celular e nos painéis de destaque. */
+.water .liquid {
+  -webkit-backdrop-filter: url(#water) blur(4px) saturate(180%) brightness(1.04);
+  backdrop-filter: url(#water) blur(4px) saturate(180%) brightness(1.04);
+}
+.liquid {
+  position: relative;
+}
+.liquid::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 32%, rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, 0.16) 100%);
+  mix-blend-mode: soft-light;
+}
+/* Chip de vidro mais opaco (item ativo do menu, linhas de lista). */
+.glass-chip {
+  background-color: var(--surface-secondary);
+  box-shadow:
+    inset 1px 1px 0 var(--glass-border),
+    inset -1px -1px 0 var(--glass-edge-dim);
+}
+
+/* Magic Card (Magic UI): brilho rosa que segue o cursor e acende a borda.
+   As variáveis --mx/--my vêm do Card (onPointerMove). */
+.magic {
+  position: relative;
+  --mx: -999px;
+  --my: -999px;
+}
+.magic::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(260px circle at var(--mx) var(--my), color-mix(in srgb, var(--primary) 65%, transparent), transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.25s ease-out;
+}
+.magic:hover::before {
+  opacity: 1;
+}
+
+/* Border Beam (Magic UI): um feixe que percorre a borda. */
+@property --beam-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+.beam {
+  position: relative;
+}
+.beam::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  pointer-events: none;
+  z-index: 1;
+  background: conic-gradient(from var(--beam-angle), transparent 0 72%, var(--peach) 84%, var(--primary) 92%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* Shimmer Button (Magic UI): reflexo que atravessa o botão de ação. */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: -40% -60%;
+  z-index: -1;
+  background: linear-gradient(100deg, transparent 40%, rgba(255, 255, 255, 0.34) 50%, transparent 60%);
+  transform: translateX(-60%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .beam::before {
+    animation: beam-spin 5s linear infinite;
+  }
+  .shimmer::after {
+    animation: shimmer-sweep 3.2s ease-in-out infinite;
+  }
+  /* Blur Fade (Magic UI): entrada saindo do desfoque. `--i` escalona. */
+  .blur-fade {
+    animation: blur-fade 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--i, 0) * 70ms);
+  }
+}
+@keyframes beam-spin {
+  to {
+    --beam-angle: 360deg;
+  }
+}
+@keyframes shimmer-sweep {
+  0%,
+  55% {
+    transform: translateX(-60%);
+  }
+  100% {
+    transform: translateX(60%);
+  }
+}
+@keyframes blur-fade {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(8px);
+  }
 }
 
 /* Campo padrão (decisão #71): toda caixa de texto, número, data, select e
@@ -248,12 +426,12 @@ textarea.field {
 select.field {
   appearance: none;
   padding-right: 36px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2352627F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23625868' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
 }
 .dark select.field {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%238C9AB5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23A99FB2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
 }
 .dark .field {
   color-scheme: dark;
@@ -299,7 +477,8 @@ select.field {
      aplicação inteira (#root) e imprimir só a cópia em `.print-portal`, que
      passa a ser a ÚNICA coisa que sobra no body -- nada mais contribui pra
      altura da página. */
-  body > #root {
+  body > #root,
+  .petal-field {
     display: none;
   }
   .print-portal {

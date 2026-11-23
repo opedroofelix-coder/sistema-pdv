@@ -31,7 +31,7 @@ export function Login() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <Card className="w-full max-w-sm">
-        <Logo className="mb-4 h-10" />
+        <Logo className="mb-5" />
         <h1 className="mb-1 text-2xl font-bold tracking-tight text-ink">Entrar</h1>
         <p className="mb-6 text-sm text-ink-soft">Sistema PDV</p>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">

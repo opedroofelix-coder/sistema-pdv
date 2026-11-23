@@ -19,6 +19,7 @@ import { PAYMENT_LABEL } from '../lib/sales'
 import type { RecordedPaymentMethod } from '../lib/types'
 import { Badge } from '../components/ui/Badge'
 import { PageHeader } from '../components/layout/PageHeader'
+import { NumberTicker } from '../components/ui/NumberTicker'
 
 export function Dashboard() {
   const { profile } = useAuth()
@@ -64,14 +65,15 @@ export function Dashboard() {
         <SkeletonKpis glass className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" label="Carregando vendas…" />
       ) : stats ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Vendas hoje" value={formatCurrency(stats.todayTotal)} sub={`${stats.todayCount} venda${stats.todayCount === 1 ? '' : 's'}`}>
+          <StatCard i={0} label="Vendas hoje" value={stats.todayTotal} format={formatCurrency} sub={`${stats.todayCount} venda${stats.todayCount === 1 ? '' : 's'}`}>
             <ChannelSplit total={stats.todayTotal} site={stats.todaySiteTotal} />
           </StatCard>
-          <StatCard label="Vendas no mês" value={formatCurrency(stats.monthTotal)} sub={`${stats.monthCount} venda${stats.monthCount === 1 ? '' : 's'}`}>
+          <StatCard i={1} label="Vendas no mês" value={stats.monthTotal} format={formatCurrency} sub={`${stats.monthCount} venda${stats.monthCount === 1 ? '' : 's'}`}>
             <ChannelSplit total={stats.monthTotal} site={stats.monthSiteTotal} />
           </StatCard>
-          <StatCard label="Ticket médio" value={formatCurrency(stats.avgTicket)} sub="no mês" />
+          <StatCard i={2} label="Ticket médio" value={stats.avgTicket} format={formatCurrency} sub="no mês" />
           <StatCard
+            i={3}
             label="Forma mais usada"
             value={
               Object.entries(stats.byPaymentMethod).sort((a, b) => b[1] - a[1])[0]
@@ -142,20 +144,27 @@ export function Dashboard() {
 function StatCard({
   label,
   value,
+  format,
   sub,
+  i = 0,
   children,
 }: {
   label: string
-  value: string
+  /** Número com `format` conta até o valor (Number Ticker); texto aparece direto. */
+  value: number | string
+  format?: (n: number) => string
   sub: string
+  i?: number
   children?: ReactNode
 }) {
   return (
-    <div className="rounded-panel glass glass-blur px-5 py-4">
-      <p className="text-xs font-bold uppercase tracking-wide text-ink-soft">{label}</p>
-      <p className="mt-1.5 text-[28px] font-bold leading-tight tracking-tight tabular-nums text-ink">{value}</p>
-      <p className="mt-0.5 text-[13px] font-semibold text-ink-soft">{sub}</p>
+    <Card className="blur-fade px-5 py-4" style={{ ['--i' as string]: i }}>
+      <p className="text-[13px] font-medium text-ink-soft">{label}</p>
+      <p className="mt-1 text-[30px] font-bold leading-tight tracking-[-0.03em] tabular-nums text-ink">
+        {typeof value === 'number' && format ? <NumberTicker value={value} format={format} /> : value}
+      </p>
+      <p className="mt-0.5 text-[13px] font-medium text-ink-soft">{sub}</p>
       {children}
-    </div>
+    </Card>
   )
 }

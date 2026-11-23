@@ -25,7 +25,7 @@ export function SegmentedControl<T extends string>({
     <div
       role="group"
       aria-label={props['aria-label']}
-      className={`inline-flex max-w-full gap-0.5 overflow-x-auto rounded-full bg-border p-1 ${className}`}
+      className={`inline-flex max-w-full gap-0.5 overflow-x-auto rounded-full glass-chip p-1 ${className}`}
     >
       {options.map((o) => {
         const active = o.value === value
@@ -37,7 +37,7 @@ export function SegmentedControl<T extends string>({
             onClick={() => onChange(o.value)}
             className={`h-9 shrink-0 whitespace-nowrap rounded-full px-4 text-sm transition-colors ${
               active
-                ? 'bg-surface-raised font-bold text-primary shadow-md shadow-ink/10'
+                ? 'bg-action font-semibold text-action-content shadow-md shadow-ink/10'
                 : 'font-semibold text-ink-secondary hover:text-ink'
             }`}
           >
